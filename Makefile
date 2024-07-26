@@ -37,12 +37,12 @@ libdapr.so : $(OBJ_FILES)
 
 .PRECIOUS: src/%.grpc.pb.cc
 src/%.grpc.pb.cc: %.proto
-	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=./src/ --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<
+	$(PROTOC) -I $(PROTOS_PATH) --experimental_allow_proto3_optional --grpc_out=./src/ --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<
 
 .PRECIOUS: src/%.pb.cc
 src/%.pb.cc: %.proto
 	mkdir -p ./src
-	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=./src/ $<
+	$(PROTOC) -I $(PROTOS_PATH) --experimental_allow_proto3_optional --cpp_out=./src/ $<
 
 clean:
 	rm -f ./src/dapr/proto/common/v1/*.o ./src/dapr/proto/runtime/v1/*.o
@@ -53,6 +53,8 @@ refresh_proto_files:
 		curl -o $$file https://raw.githubusercontent.com/dapr/dapr/$(DAPR_TARGET)/$$file; \
 	done
 
+generate_proto_files:
+	$(PROTOC) -I $(PROTOS_PATH) --experimental_allow_proto3_optional --cpp_out=./src/ $(PROTO_FILES)
 
 # The following is to test your system and ensure a smoother experience.
 # They are by no means necessary to actually compile a grpc-enabled software.

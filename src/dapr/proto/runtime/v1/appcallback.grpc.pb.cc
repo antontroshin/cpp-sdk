@@ -11,8 +11,12 @@
 #include <grpcpp/impl/codegen/channel_interface.h>
 #include <grpcpp/impl/codegen/client_unary_call.h>
 #include <grpcpp/impl/codegen/client_callback.h>
-#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
 #include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 namespace dapr {
@@ -47,15 +51,27 @@ AppCallback::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
 }
 
 void AppCallback::Stub::experimental_async::OnInvoke(::grpc::ClientContext* context, const ::dapr::proto::common::v1::InvokeRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnInvoke_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnInvoke_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnInvoke(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnInvoke_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnInvoke(::grpc::ClientContext* context, const ::dapr::proto::common::v1::InvokeRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnInvoke_, context, request, response, reactor);
+}
+
+void AppCallback::Stub::experimental_async::OnInvoke(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnInvoke_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::common::v1::InvokeResponse>* AppCallback::Stub::AsyncOnInvokeRaw(::grpc::ClientContext* context, const ::dapr::proto::common::v1::InvokeRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::common::v1::InvokeResponse>::Create(channel_.get(), cq, rpcmethod_OnInvoke_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::common::v1::InvokeResponse>::Create(channel_.get(), cq, rpcmethod_OnInvoke_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::common::v1::InvokeResponse>* AppCallback::Stub::PrepareAsyncOnInvokeRaw(::grpc::ClientContext* context, const ::dapr::proto::common::v1::InvokeRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::common::v1::InvokeResponse>::Create(channel_.get(), cq, rpcmethod_OnInvoke_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::common::v1::InvokeResponse>::Create(channel_.get(), cq, rpcmethod_OnInvoke_, context, request, false);
 }
 
 ::grpc::Status AppCallback::Stub::ListTopicSubscriptions(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* response) {
@@ -63,15 +79,27 @@ void AppCallback::Stub::experimental_async::OnInvoke(::grpc::ClientContext* cont
 }
 
 void AppCallback::Stub::experimental_async::ListTopicSubscriptions(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListTopicSubscriptions_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListTopicSubscriptions_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::ListTopicSubscriptions(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListTopicSubscriptions_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::ListTopicSubscriptions(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_ListTopicSubscriptions_, context, request, response, reactor);
+}
+
+void AppCallback::Stub::experimental_async::ListTopicSubscriptions(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_ListTopicSubscriptions_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>* AppCallback::Stub::AsyncListTopicSubscriptionsRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>::Create(channel_.get(), cq, rpcmethod_ListTopicSubscriptions_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>::Create(channel_.get(), cq, rpcmethod_ListTopicSubscriptions_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>* AppCallback::Stub::PrepareAsyncListTopicSubscriptionsRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>::Create(channel_.get(), cq, rpcmethod_ListTopicSubscriptions_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>::Create(channel_.get(), cq, rpcmethod_ListTopicSubscriptions_, context, request, false);
 }
 
 ::grpc::Status AppCallback::Stub::OnTopicEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventRequest& request, ::dapr::proto::runtime::v1::TopicEventResponse* response) {
@@ -79,15 +107,27 @@ void AppCallback::Stub::experimental_async::ListTopicSubscriptions(::grpc::Clien
 }
 
 void AppCallback::Stub::experimental_async::OnTopicEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventRequest* request, ::dapr::proto::runtime::v1::TopicEventResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnTopicEvent_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnTopicEvent_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnTopicEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TopicEventResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnTopicEvent_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnTopicEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventRequest* request, ::dapr::proto::runtime::v1::TopicEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnTopicEvent_, context, request, response, reactor);
+}
+
+void AppCallback::Stub::experimental_async::OnTopicEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TopicEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnTopicEvent_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::TopicEventResponse>* AppCallback::Stub::AsyncOnTopicEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventResponse>::Create(channel_.get(), cq, rpcmethod_OnTopicEvent_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventResponse>::Create(channel_.get(), cq, rpcmethod_OnTopicEvent_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::TopicEventResponse>* AppCallback::Stub::PrepareAsyncOnTopicEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventResponse>::Create(channel_.get(), cq, rpcmethod_OnTopicEvent_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventResponse>::Create(channel_.get(), cq, rpcmethod_OnTopicEvent_, context, request, false);
 }
 
 ::grpc::Status AppCallback::Stub::ListInputBindings(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::dapr::proto::runtime::v1::ListInputBindingsResponse* response) {
@@ -95,15 +135,27 @@ void AppCallback::Stub::experimental_async::OnTopicEvent(::grpc::ClientContext* 
 }
 
 void AppCallback::Stub::experimental_async::ListInputBindings(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::ListInputBindingsResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListInputBindings_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListInputBindings_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::ListInputBindings(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ListInputBindingsResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ListInputBindings_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::ListInputBindings(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::ListInputBindingsResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_ListInputBindings_, context, request, response, reactor);
+}
+
+void AppCallback::Stub::experimental_async::ListInputBindings(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ListInputBindingsResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_ListInputBindings_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ListInputBindingsResponse>* AppCallback::Stub::AsyncListInputBindingsRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListInputBindingsResponse>::Create(channel_.get(), cq, rpcmethod_ListInputBindings_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListInputBindingsResponse>::Create(channel_.get(), cq, rpcmethod_ListInputBindings_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ListInputBindingsResponse>* AppCallback::Stub::PrepareAsyncListInputBindingsRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListInputBindingsResponse>::Create(channel_.get(), cq, rpcmethod_ListInputBindings_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::ListInputBindingsResponse>::Create(channel_.get(), cq, rpcmethod_ListInputBindings_, context, request, false);
 }
 
 ::grpc::Status AppCallback::Stub::OnBindingEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BindingEventRequest& request, ::dapr::proto::runtime::v1::BindingEventResponse* response) {
@@ -111,15 +163,27 @@ void AppCallback::Stub::experimental_async::ListInputBindings(::grpc::ClientCont
 }
 
 void AppCallback::Stub::experimental_async::OnBindingEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BindingEventRequest* request, ::dapr::proto::runtime::v1::BindingEventResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBindingEvent_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBindingEvent_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnBindingEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BindingEventResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBindingEvent_, context, request, response, std::move(f));
+}
+
+void AppCallback::Stub::experimental_async::OnBindingEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BindingEventRequest* request, ::dapr::proto::runtime::v1::BindingEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnBindingEvent_, context, request, response, reactor);
+}
+
+void AppCallback::Stub::experimental_async::OnBindingEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BindingEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnBindingEvent_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BindingEventResponse>* AppCallback::Stub::AsyncOnBindingEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BindingEventRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::BindingEventResponse>::Create(channel_.get(), cq, rpcmethod_OnBindingEvent_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::BindingEventResponse>::Create(channel_.get(), cq, rpcmethod_OnBindingEvent_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BindingEventResponse>* AppCallback::Stub::PrepareAsyncOnBindingEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BindingEventRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::BindingEventResponse>::Create(channel_.get(), cq, rpcmethod_OnBindingEvent_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::BindingEventResponse>::Create(channel_.get(), cq, rpcmethod_OnBindingEvent_, context, request, false);
 }
 
 AppCallback::Service::Service() {
@@ -127,27 +191,52 @@ AppCallback::Service::Service() {
       AppCallback_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallback::Service, ::dapr::proto::common::v1::InvokeRequest, ::dapr::proto::common::v1::InvokeResponse>(
-          std::mem_fn(&AppCallback::Service::OnInvoke), this)));
+          [](AppCallback::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::dapr::proto::common::v1::InvokeRequest* req,
+             ::dapr::proto::common::v1::InvokeResponse* resp) {
+               return service->OnInvoke(ctx, req, resp);
+             }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AppCallback_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallback::Service, ::google::protobuf::Empty, ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse>(
-          std::mem_fn(&AppCallback::Service::ListTopicSubscriptions), this)));
+          [](AppCallback::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::google::protobuf::Empty* req,
+             ::dapr::proto::runtime::v1::ListTopicSubscriptionsResponse* resp) {
+               return service->ListTopicSubscriptions(ctx, req, resp);
+             }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AppCallback_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallback::Service, ::dapr::proto::runtime::v1::TopicEventRequest, ::dapr::proto::runtime::v1::TopicEventResponse>(
-          std::mem_fn(&AppCallback::Service::OnTopicEvent), this)));
+          [](AppCallback::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::dapr::proto::runtime::v1::TopicEventRequest* req,
+             ::dapr::proto::runtime::v1::TopicEventResponse* resp) {
+               return service->OnTopicEvent(ctx, req, resp);
+             }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AppCallback_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallback::Service, ::google::protobuf::Empty, ::dapr::proto::runtime::v1::ListInputBindingsResponse>(
-          std::mem_fn(&AppCallback::Service::ListInputBindings), this)));
+          [](AppCallback::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::google::protobuf::Empty* req,
+             ::dapr::proto::runtime::v1::ListInputBindingsResponse* resp) {
+               return service->ListInputBindings(ctx, req, resp);
+             }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AppCallback_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallback::Service, ::dapr::proto::runtime::v1::BindingEventRequest, ::dapr::proto::runtime::v1::BindingEventResponse>(
-          std::mem_fn(&AppCallback::Service::OnBindingEvent), this)));
+          [](AppCallback::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::dapr::proto::runtime::v1::BindingEventRequest* req,
+             ::dapr::proto::runtime::v1::BindingEventResponse* resp) {
+               return service->OnBindingEvent(ctx, req, resp);
+             }, this)));
 }
 
 AppCallback::Service::~Service() {
@@ -208,15 +297,27 @@ AppCallbackHealthCheck::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterfa
 }
 
 void AppCallbackHealthCheck::Stub::experimental_async::HealthCheck(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::HealthCheckResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_HealthCheck_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_HealthCheck_, context, request, response, std::move(f));
+}
+
+void AppCallbackHealthCheck::Stub::experimental_async::HealthCheck(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::HealthCheckResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_HealthCheck_, context, request, response, std::move(f));
+}
+
+void AppCallbackHealthCheck::Stub::experimental_async::HealthCheck(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::HealthCheckResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_HealthCheck_, context, request, response, reactor);
+}
+
+void AppCallbackHealthCheck::Stub::experimental_async::HealthCheck(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::HealthCheckResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_HealthCheck_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::HealthCheckResponse>* AppCallbackHealthCheck::Stub::AsyncHealthCheckRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::HealthCheckResponse>::Create(channel_.get(), cq, rpcmethod_HealthCheck_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::HealthCheckResponse>::Create(channel_.get(), cq, rpcmethod_HealthCheck_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::HealthCheckResponse>* AppCallbackHealthCheck::Stub::PrepareAsyncHealthCheckRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::HealthCheckResponse>::Create(channel_.get(), cq, rpcmethod_HealthCheck_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::HealthCheckResponse>::Create(channel_.get(), cq, rpcmethod_HealthCheck_, context, request, false);
 }
 
 AppCallbackHealthCheck::Service::Service() {
@@ -224,7 +325,12 @@ AppCallbackHealthCheck::Service::Service() {
       AppCallbackHealthCheck_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallbackHealthCheck::Service, ::google::protobuf::Empty, ::dapr::proto::runtime::v1::HealthCheckResponse>(
-          std::mem_fn(&AppCallbackHealthCheck::Service::HealthCheck), this)));
+          [](AppCallbackHealthCheck::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::google::protobuf::Empty* req,
+             ::dapr::proto::runtime::v1::HealthCheckResponse* resp) {
+               return service->HealthCheck(ctx, req, resp);
+             }, this)));
 }
 
 AppCallbackHealthCheck::Service::~Service() {
@@ -240,6 +346,7 @@ AppCallbackHealthCheck::Service::~Service() {
 
 static const char* AppCallbackAlpha_method_names[] = {
   "/dapr.proto.runtime.v1.AppCallbackAlpha/OnBulkTopicEventAlpha1",
+  "/dapr.proto.runtime.v1.AppCallbackAlpha/OnJobEventAlpha1",
 };
 
 std::unique_ptr< AppCallbackAlpha::Stub> AppCallbackAlpha::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -250,6 +357,7 @@ std::unique_ptr< AppCallbackAlpha::Stub> AppCallbackAlpha::NewStub(const std::sh
 
 AppCallbackAlpha::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_OnBulkTopicEventAlpha1_(AppCallbackAlpha_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_OnJobEventAlpha1_(AppCallbackAlpha_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status AppCallbackAlpha::Stub::OnBulkTopicEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest& request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response) {
@@ -257,15 +365,55 @@ AppCallbackAlpha::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
 }
 
 void AppCallbackAlpha::Stub::experimental_async::OnBulkTopicEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest* request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBulkTopicEventAlpha1_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBulkTopicEventAlpha1_, context, request, response, std::move(f));
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnBulkTopicEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnBulkTopicEventAlpha1_, context, request, response, std::move(f));
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnBulkTopicEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest* request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnBulkTopicEventAlpha1_, context, request, response, reactor);
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnBulkTopicEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnBulkTopicEventAlpha1_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::TopicEventBulkResponse>* AppCallbackAlpha::Stub::AsyncOnBulkTopicEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventBulkResponse>::Create(channel_.get(), cq, rpcmethod_OnBulkTopicEventAlpha1_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventBulkResponse>::Create(channel_.get(), cq, rpcmethod_OnBulkTopicEventAlpha1_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::TopicEventBulkResponse>* AppCallbackAlpha::Stub::PrepareAsyncOnBulkTopicEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventBulkResponse>::Create(channel_.get(), cq, rpcmethod_OnBulkTopicEventAlpha1_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::TopicEventBulkResponse>::Create(channel_.get(), cq, rpcmethod_OnBulkTopicEventAlpha1_, context, request, false);
+}
+
+::grpc::Status AppCallbackAlpha::Stub::OnJobEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::JobEventRequest& request, ::dapr::proto::runtime::v1::JobEventResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_OnJobEventAlpha1_, context, request, response);
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnJobEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::JobEventRequest* request, ::dapr::proto::runtime::v1::JobEventResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnJobEventAlpha1_, context, request, response, std::move(f));
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnJobEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::JobEventResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_OnJobEventAlpha1_, context, request, response, std::move(f));
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnJobEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::JobEventRequest* request, ::dapr::proto::runtime::v1::JobEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnJobEventAlpha1_, context, request, response, reactor);
+}
+
+void AppCallbackAlpha::Stub::experimental_async::OnJobEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::JobEventResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_OnJobEventAlpha1_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::JobEventResponse>* AppCallbackAlpha::Stub::AsyncOnJobEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::JobEventRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::JobEventResponse>::Create(channel_.get(), cq, rpcmethod_OnJobEventAlpha1_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::JobEventResponse>* AppCallbackAlpha::Stub::PrepareAsyncOnJobEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::JobEventRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::dapr::proto::runtime::v1::JobEventResponse>::Create(channel_.get(), cq, rpcmethod_OnJobEventAlpha1_, context, request, false);
 }
 
 AppCallbackAlpha::Service::Service() {
@@ -273,13 +421,35 @@ AppCallbackAlpha::Service::Service() {
       AppCallbackAlpha_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< AppCallbackAlpha::Service, ::dapr::proto::runtime::v1::TopicEventBulkRequest, ::dapr::proto::runtime::v1::TopicEventBulkResponse>(
-          std::mem_fn(&AppCallbackAlpha::Service::OnBulkTopicEventAlpha1), this)));
+          [](AppCallbackAlpha::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::dapr::proto::runtime::v1::TopicEventBulkRequest* req,
+             ::dapr::proto::runtime::v1::TopicEventBulkResponse* resp) {
+               return service->OnBulkTopicEventAlpha1(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      AppCallbackAlpha_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< AppCallbackAlpha::Service, ::dapr::proto::runtime::v1::JobEventRequest, ::dapr::proto::runtime::v1::JobEventResponse>(
+          [](AppCallbackAlpha::Service* service,
+             ::grpc_impl::ServerContext* ctx,
+             const ::dapr::proto::runtime::v1::JobEventRequest* req,
+             ::dapr::proto::runtime::v1::JobEventResponse* resp) {
+               return service->OnJobEventAlpha1(ctx, req, resp);
+             }, this)));
 }
 
 AppCallbackAlpha::Service::~Service() {
 }
 
 ::grpc::Status AppCallbackAlpha::Service::OnBulkTopicEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TopicEventBulkRequest* request, ::dapr::proto::runtime::v1::TopicEventBulkResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status AppCallbackAlpha::Service::OnJobEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::JobEventRequest* request, ::dapr::proto::runtime::v1::JobEventResponse* response) {
   (void) context;
   (void) request;
   (void) response;

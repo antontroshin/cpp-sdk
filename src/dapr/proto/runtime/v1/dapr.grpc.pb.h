@@ -20,23 +20,24 @@
 #include "dapr/proto/runtime/v1/dapr.pb.h"
 
 #include <functional>
+#include <grpc/impl/codegen/port_platform.h>
 #include <grpcpp/impl/codegen/async_generic_service.h>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
-#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
 #include <grpcpp/impl/codegen/proto_utils.h>
 #include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
-
-namespace grpc {
-class CompletionQueue;
-class Channel;
-class ServerCompletionQueue;
-class ServerContext;
-}  // namespace grpc
 
 namespace dapr {
 namespace proto {
@@ -133,6 +134,17 @@ class Dapr final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::BulkPublishResponse>> PrepareAsyncBulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::BulkPublishResponse>>(PrepareAsyncBulkPublishEventAlpha1Raw(context, request, cq));
     }
+    // SubscribeTopicEventsAlpha1 subscribes to a PubSub topic and receives topic
+    // events from it.
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> SubscribeTopicEventsAlpha1(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(SubscribeTopicEventsAlpha1Raw(context));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> AsyncSubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(AsyncSubscribeTopicEventsAlpha1Raw(context, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> PrepareAsyncSubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(PrepareAsyncSubscribeTopicEventsAlpha1Raw(context, cq));
+    }
     // Invokes binding data to specific output bindings
     virtual ::grpc::Status InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::InvokeBindingResponse>> AsyncInvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) {
@@ -188,14 +200,6 @@ class Dapr final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncUnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncUnregisterActorReminderRaw(context, request, cq));
-    }
-    // Rename an actor reminder.
-    virtual ::grpc::Status RenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::google::protobuf::Empty* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncRenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncRenameActorReminderRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncRenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncRenameActorReminderRaw(context, request, cq));
     }
     // Gets the state for a specific actor.
     virtual ::grpc::Status GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) = 0;
@@ -310,11 +314,11 @@ class Dapr final {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>>(PrepareAsyncDecryptAlpha1Raw(context, cq));
     }
     // Gets metadata of the sidecar
-    virtual ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    virtual ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
     }
     // Sets value in extended metadata of the sidecar
@@ -437,13 +441,93 @@ class Dapr final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncRaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncRaiseEventWorkflowAlpha1Raw(context, request, cq));
     }
+    // Starts a new instance of a workflow
+    virtual ::grpc::Status StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>> AsyncStartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>>(AsyncStartWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>> PrepareAsyncStartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>>(PrepareAsyncStartWorkflowBeta1Raw(context, request, cq));
+    }
+    // Gets details about a started workflow instance
+    virtual ::grpc::Status GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>> AsyncGetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>>(AsyncGetWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>> PrepareAsyncGetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>>(PrepareAsyncGetWorkflowBeta1Raw(context, request, cq));
+    }
+    // Purge Workflow
+    virtual ::grpc::Status PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncPurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncPurgeWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncPurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncPurgeWorkflowBeta1Raw(context, request, cq));
+    }
+    // Terminates a running workflow instance
+    virtual ::grpc::Status TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncTerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncTerminateWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncTerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncTerminateWorkflowBeta1Raw(context, request, cq));
+    }
+    // Pauses a running workflow instance
+    virtual ::grpc::Status PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncPauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncPauseWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncPauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncPauseWorkflowBeta1Raw(context, request, cq));
+    }
+    // Resumes a paused workflow instance
+    virtual ::grpc::Status ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncResumeWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncResumeWorkflowBeta1Raw(context, request, cq));
+    }
+    // Raise an event to a running workflow instance
+    virtual ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncRaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncRaiseEventWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncRaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncRaiseEventWorkflowBeta1Raw(context, request, cq));
+    }
     // Shutdown the sidecar
-    virtual ::grpc::Status Shutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::google::protobuf::Empty* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncShutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    virtual ::grpc::Status Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::google::protobuf::Empty* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> AsyncShutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(AsyncShutdownRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncShutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>> PrepareAsyncShutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>>(PrepareAsyncShutdownRaw(context, request, cq));
+    }
+    // Create and schedule a job
+    virtual ::grpc::Status ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>> AsyncScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>>(AsyncScheduleJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>> PrepareAsyncScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>>(PrepareAsyncScheduleJobAlpha1Raw(context, request, cq));
+    }
+    // Gets a scheduled job
+    virtual ::grpc::Status GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::dapr::proto::runtime::v1::GetJobResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>> AsyncGetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>>(AsyncGetJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>> PrepareAsyncGetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>>(PrepareAsyncGetJobAlpha1Raw(context, request, cq));
+    }
+    // Delete a job
+    virtual ::grpc::Status DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::dapr::proto::runtime::v1::DeleteJobResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>> AsyncDeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>>(AsyncDeleteJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>> PrepareAsyncDeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>>(PrepareAsyncDeleteJobAlpha1Raw(context, request, cq));
     }
     class experimental_async_interface {
      public:
@@ -451,97 +535,731 @@ class Dapr final {
       // Invokes a method on a remote Dapr app.
       // Deprecated: Use proxy mode service invocation instead.
       virtual void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets the state for a specific key.
       virtual void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets a bulk of state items for a list of keys
       virtual void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Saves the state for a specific key.
       virtual void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Queries the state.
       virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Deletes the state for a specific key.
       virtual void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Deletes a bulk of state items for a list of keys
       virtual void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Executes transactions for a specified store
       virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Publishes events to the specific topic.
       virtual void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Bulk Publishes multiple events to the specified topic.
       virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // SubscribeTopicEventsAlpha1 subscribes to a PubSub topic and receives topic
+      // events from it.
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1,::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* reactor) = 0;
+      #else
+      virtual void SubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1,::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* reactor) = 0;
+      #endif
       // Invokes binding data to specific output bindings
       virtual void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets secrets from secret stores.
       virtual void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets a bulk of secrets
       virtual void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Register an actor timer.
       virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Unregister an actor timer.
       virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Register an actor reminder.
       virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Unregister an actor reminder.
       virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
-      // Rename an actor reminder.
-      virtual void RenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets the state for a specific actor.
       virtual void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Executes state transactions for a specified actor
       virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // InvokeActor calls a method on an actor.
       virtual void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // GetConfiguration gets configuration from configuration store.
       virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // GetConfiguration gets configuration from configuration store.
       virtual void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubscribeConfiguration gets configuration from configuration store and subscribe the updates event by grpc stream
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubscribeConfigurationAlpha1(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) = 0;
+      #else
+      virtual void SubscribeConfigurationAlpha1(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::experimental::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) = 0;
+      #endif
       // SubscribeConfiguration gets configuration from configuration store and subscribe the updates event by grpc stream
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubscribeConfiguration(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) = 0;
+      #else
+      virtual void SubscribeConfiguration(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::experimental::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) = 0;
+      #endif
       // UnSubscribeConfiguration unsubscribe the subscription of configuration
       virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // UnSubscribeConfiguration unsubscribe the subscription of configuration
       virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // TryLockAlpha1 tries to get a lock with an expiry.
       virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // UnlockAlpha1 unlocks a lock.
       virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // EncryptAlpha1 encrypts a message using the Dapr encryption scheme and a key stored in the vault.
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void EncryptAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest,::dapr::proto::runtime::v1::EncryptResponse>* reactor) = 0;
+      #else
+      virtual void EncryptAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest,::dapr::proto::runtime::v1::EncryptResponse>* reactor) = 0;
+      #endif
       // DecryptAlpha1 decrypts a message using the Dapr encryption scheme and a key stored in the vault.
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DecryptAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest,::dapr::proto::runtime::v1::DecryptResponse>* reactor) = 0;
+      #else
+      virtual void DecryptAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest,::dapr::proto::runtime::v1::DecryptResponse>* reactor) = 0;
+      #endif
       // Gets metadata of the sidecar
-      virtual void GetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Sets value in extended metadata of the sidecar
       virtual void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleGetKeyAlpha1 returns the public part of an asymmetric key stored in the vault.
       virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleEncryptAlpha1 encrypts a small message using a key stored in the vault.
       virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleDecryptAlpha1 decrypts a small message using a key stored in the vault.
       virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleWrapKeyAlpha1 wraps a key using a key stored in the vault.
       virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleUnwrapKeyAlpha1 unwraps a key using a key stored in the vault.
       virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleSignAlpha1 signs a message using a key stored in the vault.
       virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // SubtleVerifyAlpha1 verifies the signature of a message using a key stored in the vault.
       virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Starts a new instance of a workflow
       virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Gets details about a started workflow instance
       virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Purge Workflow
       virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Terminates a running workflow instance
       virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Pauses a running workflow instance
       virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Resumes a paused workflow instance
       virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Raise an event to a running workflow instance
       virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Starts a new instance of a workflow
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Gets details about a started workflow instance
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Purge Workflow
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Terminates a running workflow instance
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Pauses a running workflow instance
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Resumes a paused workflow instance
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Raise an event to a running workflow instance
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       // Shutdown the sidecar
-      virtual void Shutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Create and schedule a job
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Gets a scheduled job
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // Delete a job
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
     };
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    typedef class experimental_async_interface async_interface;
+    #endif
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    async_interface* async() { return experimental_async(); }
+    #endif
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::common::v1::InvokeResponse>* AsyncInvokeServiceRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -564,6 +1282,9 @@ class Dapr final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncPublishEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::BulkPublishResponse>* AsyncBulkPublishEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::BulkPublishResponse>* PrepareAsyncBulkPublishEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* SubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* AsyncSubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* PrepareAsyncSubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::InvokeBindingResponse>* AsyncInvokeBindingRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::InvokeBindingResponse>* PrepareAsyncInvokeBindingRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetSecretResponse>* AsyncGetSecretRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -578,8 +1299,6 @@ class Dapr final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncRegisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncUnregisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncUnregisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncRenameActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncRenameActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetActorStateResponse>* AsyncGetActorStateRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetActorStateResponse>* PrepareAsyncGetActorStateRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncExecuteActorStateTransactionRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -610,8 +1329,8 @@ class Dapr final {
     virtual ::grpc::ClientReaderWriterInterface< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* DecryptAlpha1Raw(::grpc::ClientContext* context) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* AsyncDecryptAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* PrepareAsyncDecryptAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::SubtleGetKeyResponse>* AsyncSubtleGetKeyAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -642,8 +1361,28 @@ class Dapr final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncResumeWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncRaiseEventWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncRaiseEventWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncShutdownRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncShutdownRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>* AsyncStartWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::StartWorkflowResponse>* PrepareAsyncStartWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>* AsyncGetWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetWorkflowResponse>* PrepareAsyncGetWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncPurgeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncPurgeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncTerminateWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncTerminateWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncPauseWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncPauseWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncResumeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncResumeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncRaiseEventWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncRaiseEventWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncShutdownRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* PrepareAsyncShutdownRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>* AsyncScheduleJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::ScheduleJobResponse>* PrepareAsyncScheduleJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>* AsyncGetJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::GetJobResponse>* PrepareAsyncGetJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>* AsyncDeleteJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::dapr::proto::runtime::v1::DeleteJobResponse>* PrepareAsyncDeleteJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -718,6 +1457,15 @@ class Dapr final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BulkPublishResponse>> PrepareAsyncBulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BulkPublishResponse>>(PrepareAsyncBulkPublishEventAlpha1Raw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> SubscribeTopicEventsAlpha1(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(SubscribeTopicEventsAlpha1Raw(context));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> AsyncSubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(AsyncSubscribeTopicEventsAlpha1Raw(context, cq, tag));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>> PrepareAsyncSubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>>(PrepareAsyncSubscribeTopicEventsAlpha1Raw(context, cq));
+    }
     ::grpc::Status InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::InvokeBindingResponse>> AsyncInvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::InvokeBindingResponse>>(AsyncInvokeBindingRaw(context, request, cq));
@@ -766,13 +1514,6 @@ class Dapr final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncUnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncUnregisterActorReminderRaw(context, request, cq));
-    }
-    ::grpc::Status RenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::google::protobuf::Empty* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncRenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncRenameActorReminderRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncRenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncRenameActorReminderRaw(context, request, cq));
     }
     ::grpc::Status GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetActorStateResponse>> AsyncGetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::grpc::CompletionQueue* cq) {
@@ -873,11 +1614,11 @@ class Dapr final {
     std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>> PrepareAsyncDecryptAlpha1(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>>(PrepareAsyncDecryptAlpha1Raw(context, cq));
     }
-    ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
     }
     ::grpc::Status SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest& request, ::google::protobuf::Empty* response) override;
@@ -985,60 +1726,747 @@ class Dapr final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncRaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncRaiseEventWorkflowAlpha1Raw(context, request, cq));
     }
-    ::grpc::Status Shutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::google::protobuf::Empty* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncShutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    ::grpc::Status StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>> AsyncStartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>>(AsyncStartWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>> PrepareAsyncStartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>>(PrepareAsyncStartWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>> AsyncGetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>>(AsyncGetWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>> PrepareAsyncGetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>>(PrepareAsyncGetWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncPurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncPurgeWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncPurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncPurgeWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncTerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncTerminateWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncTerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncTerminateWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncPauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncPauseWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncPauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncPauseWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncResumeWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncResumeWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncRaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncRaiseEventWorkflowBeta1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncRaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncRaiseEventWorkflowBeta1Raw(context, request, cq));
+    }
+    ::grpc::Status Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::google::protobuf::Empty* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> AsyncShutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(AsyncShutdownRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncShutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>> PrepareAsyncShutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>>(PrepareAsyncShutdownRaw(context, request, cq));
+    }
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>> AsyncScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>>(AsyncScheduleJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>> PrepareAsyncScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>>(PrepareAsyncScheduleJobAlpha1Raw(context, request, cq));
+    }
+    ::grpc::Status GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::dapr::proto::runtime::v1::GetJobResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>> AsyncGetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>>(AsyncGetJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>> PrepareAsyncGetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>>(PrepareAsyncGetJobAlpha1Raw(context, request, cq));
+    }
+    ::grpc::Status DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::dapr::proto::runtime::v1::DeleteJobResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>> AsyncDeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>>(AsyncDeleteJobAlpha1Raw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>> PrepareAsyncDeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>>(PrepareAsyncDeleteJobAlpha1Raw(context, request, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
       void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)>) override;
+      void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeService(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeService(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::common::v1::InvokeResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SaveState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SaveState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, std::function<void(::grpc::Status)>) override;
+      void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void QueryStateAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void QueryStateAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::QueryStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteBulkState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteBulkState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ExecuteStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ExecuteStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PublishEvent(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PublishEvent(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, std::function<void(::grpc::Status)>) override;
+      void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void BulkPublishEventAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1,::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* reactor) override;
+      #else
+      void SubscribeTopicEventsAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1,::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* reactor) override;
+      #endif
       void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, std::function<void(::grpc::Status)>) override;
+      void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeBinding(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeBinding(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetBulkSecret(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetBulkSecret(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RegisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RegisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnregisterActorTimer(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnregisterActorTimer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RegisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RegisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
-      void RenameActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnregisterActorReminder(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnregisterActorReminder(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetActorState(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetActorState(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ExecuteActorStateTransaction(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, std::function<void(::grpc::Status)>) override;
+      void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeActor(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void InvokeActor(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubscribeConfigurationAlpha1(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) override;
+      #else
+      void SubscribeConfigurationAlpha1(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::experimental::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubscribeConfiguration(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) override;
+      #else
+      void SubscribeConfiguration(::grpc::ClientContext* context, ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::experimental::ClientReadReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* reactor) override;
+      #endif
       void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnsubscribeConfigurationAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnsubscribeConfiguration(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, std::function<void(::grpc::Status)>) override;
+      void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TryLockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TryLockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::TryLockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetMetadata(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnlockAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void UnlockAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::UnlockResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void EncryptAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest,::dapr::proto::runtime::v1::EncryptResponse>* reactor) override;
+      #else
+      void EncryptAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest,::dapr::proto::runtime::v1::EncryptResponse>* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DecryptAlpha1(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest,::dapr::proto::runtime::v1::DecryptResponse>* reactor) override;
+      #else
+      void DecryptAlpha1(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest,::dapr::proto::runtime::v1::DecryptResponse>* reactor) override;
+      #endif
+      void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SetMetadata(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SetMetadata(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleGetKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleEncryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleDecryptAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleWrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleUnwrapKeyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleSignAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleSignAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, std::function<void(::grpc::Status)>) override;
+      void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void SubtleVerifyAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void StartWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PurgeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TerminateWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PauseWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ResumeWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
-      void Shutdown(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RaiseEventWorkflowAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void StartWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PurgeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void TerminateWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PauseWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ResumeWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void RaiseEventWorkflowBeta1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void Shutdown(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void Shutdown(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::google::protobuf::Empty* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, std::function<void(::grpc::Status)>) override;
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void ScheduleJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::GetJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, std::function<void(::grpc::Status)>) override;
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void DeleteJobAlpha1(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -1070,6 +2498,9 @@ class Dapr final {
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncPublishEventRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BulkPublishResponse>* AsyncBulkPublishEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::BulkPublishResponse>* PrepareAsyncBulkPublishEventAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* SubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* AsyncSubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* PrepareAsyncSubscribeTopicEventsAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::InvokeBindingResponse>* AsyncInvokeBindingRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::InvokeBindingResponse>* PrepareAsyncInvokeBindingRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetSecretResponse>* AsyncGetSecretRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -1084,8 +2515,6 @@ class Dapr final {
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncRegisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncUnregisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncUnregisterActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncRenameActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncRenameActorReminderRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetActorStateResponse>* AsyncGetActorStateRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetActorStateResponse>* PrepareAsyncGetActorStateRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncExecuteActorStateTransactionRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -1116,8 +2545,8 @@ class Dapr final {
     ::grpc::ClientReaderWriter< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* DecryptAlpha1Raw(::grpc::ClientContext* context) override;
     ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* AsyncDecryptAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReaderWriter< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* PrepareAsyncDecryptAlpha1Raw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::SubtleGetKeyResponse>* AsyncSubtleGetKeyAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -1148,8 +2577,28 @@ class Dapr final {
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncResumeWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncRaiseEventWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncRaiseEventWorkflowAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncShutdownRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncShutdownRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>* AsyncStartWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::StartWorkflowResponse>* PrepareAsyncStartWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>* AsyncGetWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetWorkflowResponse>* PrepareAsyncGetWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncPurgeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncPurgeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncTerminateWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncTerminateWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncPauseWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncPauseWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncResumeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncResumeWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncRaiseEventWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncRaiseEventWorkflowBeta1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncShutdownRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* PrepareAsyncShutdownRaw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>* AsyncScheduleJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::ScheduleJobResponse>* PrepareAsyncScheduleJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>* AsyncGetJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::GetJobResponse>* PrepareAsyncGetJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::GetJobRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>* AsyncDeleteJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::dapr::proto::runtime::v1::DeleteJobResponse>* PrepareAsyncDeleteJobAlpha1Raw(::grpc::ClientContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_InvokeService_;
     const ::grpc::internal::RpcMethod rpcmethod_GetState_;
     const ::grpc::internal::RpcMethod rpcmethod_GetBulkState_;
@@ -1160,6 +2609,7 @@ class Dapr final {
     const ::grpc::internal::RpcMethod rpcmethod_ExecuteStateTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_PublishEvent_;
     const ::grpc::internal::RpcMethod rpcmethod_BulkPublishEventAlpha1_;
+    const ::grpc::internal::RpcMethod rpcmethod_SubscribeTopicEventsAlpha1_;
     const ::grpc::internal::RpcMethod rpcmethod_InvokeBinding_;
     const ::grpc::internal::RpcMethod rpcmethod_GetSecret_;
     const ::grpc::internal::RpcMethod rpcmethod_GetBulkSecret_;
@@ -1167,7 +2617,6 @@ class Dapr final {
     const ::grpc::internal::RpcMethod rpcmethod_UnregisterActorTimer_;
     const ::grpc::internal::RpcMethod rpcmethod_RegisterActorReminder_;
     const ::grpc::internal::RpcMethod rpcmethod_UnregisterActorReminder_;
-    const ::grpc::internal::RpcMethod rpcmethod_RenameActorReminder_;
     const ::grpc::internal::RpcMethod rpcmethod_GetActorState_;
     const ::grpc::internal::RpcMethod rpcmethod_ExecuteActorStateTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_InvokeActor_;
@@ -1197,7 +2646,17 @@ class Dapr final {
     const ::grpc::internal::RpcMethod rpcmethod_PauseWorkflowAlpha1_;
     const ::grpc::internal::RpcMethod rpcmethod_ResumeWorkflowAlpha1_;
     const ::grpc::internal::RpcMethod rpcmethod_RaiseEventWorkflowAlpha1_;
+    const ::grpc::internal::RpcMethod rpcmethod_StartWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_PurgeWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_TerminateWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_PauseWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_ResumeWorkflowBeta1_;
+    const ::grpc::internal::RpcMethod rpcmethod_RaiseEventWorkflowBeta1_;
     const ::grpc::internal::RpcMethod rpcmethod_Shutdown_;
+    const ::grpc::internal::RpcMethod rpcmethod_ScheduleJobAlpha1_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetJobAlpha1_;
+    const ::grpc::internal::RpcMethod rpcmethod_DeleteJobAlpha1_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -1226,6 +2685,9 @@ class Dapr final {
     virtual ::grpc::Status PublishEvent(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response);
     // Bulk Publishes multiple events to the specified topic.
     virtual ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response);
+    // SubscribeTopicEventsAlpha1 subscribes to a PubSub topic and receives topic
+    // events from it.
+    virtual ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* stream);
     // Invokes binding data to specific output bindings
     virtual ::grpc::Status InvokeBinding(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response);
     // Gets secrets from secret stores.
@@ -1240,8 +2702,6 @@ class Dapr final {
     virtual ::grpc::Status RegisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response);
     // Unregister an actor reminder.
     virtual ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response);
-    // Rename an actor reminder.
-    virtual ::grpc::Status RenameActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response);
     // Gets the state for a specific actor.
     virtual ::grpc::Status GetActorState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response);
     // Executes state transactions for a specified actor
@@ -1269,7 +2729,7 @@ class Dapr final {
     // DecryptAlpha1 decrypts a message using the Dapr encryption scheme and a key stored in the vault.
     virtual ::grpc::Status DecryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* stream);
     // Gets metadata of the sidecar
-    virtual ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response);
+    virtual ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response);
     // Sets value in extended metadata of the sidecar
     virtual ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response);
     // SubtleGetKeyAlpha1 returns the public part of an asymmetric key stored in the vault.
@@ -1300,13 +2760,33 @@ class Dapr final {
     virtual ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response);
     // Raise an event to a running workflow instance
     virtual ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response);
+    // Starts a new instance of a workflow
+    virtual ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response);
+    // Gets details about a started workflow instance
+    virtual ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response);
+    // Purge Workflow
+    virtual ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response);
+    // Terminates a running workflow instance
+    virtual ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response);
+    // Pauses a running workflow instance
+    virtual ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response);
+    // Resumes a paused workflow instance
+    virtual ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response);
+    // Raise an event to a running workflow instance
+    virtual ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response);
     // Shutdown the sidecar
-    virtual ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response);
+    virtual ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response);
+    // Create and schedule a job
+    virtual ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response);
+    // Gets a scheduled job
+    virtual ::grpc::Status GetJobAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response);
+    // Delete a job
+    virtual ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_InvokeService : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_InvokeService() {
       ::grpc::Service::MarkMethodAsync(0);
@@ -1315,7 +2795,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeService(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response) override {
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1326,7 +2806,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetState() {
       ::grpc::Service::MarkMethodAsync(1);
@@ -1335,7 +2815,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response) override {
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1346,7 +2826,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetBulkState() {
       ::grpc::Service::MarkMethodAsync(2);
@@ -1355,7 +2835,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response) override {
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1366,7 +2846,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SaveState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SaveState() {
       ::grpc::Service::MarkMethodAsync(3);
@@ -1375,7 +2855,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SaveState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1386,7 +2866,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_QueryStateAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_QueryStateAlpha1() {
       ::grpc::Service::MarkMethodAsync(4);
@@ -1395,7 +2875,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response) override {
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1406,7 +2886,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_DeleteState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_DeleteState() {
       ::grpc::Service::MarkMethodAsync(5);
@@ -1415,7 +2895,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1426,7 +2906,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_DeleteBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_DeleteBulkState() {
       ::grpc::Service::MarkMethodAsync(6);
@@ -1435,7 +2915,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1446,7 +2926,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_ExecuteStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ExecuteStateTransaction() {
       ::grpc::Service::MarkMethodAsync(7);
@@ -1455,7 +2935,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1466,7 +2946,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_PublishEvent : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_PublishEvent() {
       ::grpc::Service::MarkMethodAsync(8);
@@ -1475,7 +2955,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PublishEvent(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1486,7 +2966,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_BulkPublishEventAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_BulkPublishEventAlpha1() {
       ::grpc::Service::MarkMethodAsync(9);
@@ -1495,7 +2975,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response) override {
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1504,169 +2984,169 @@ class Dapr final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_SubscribeTopicEventsAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_SubscribeTopicEventsAlpha1() {
+      ::grpc::Service::MarkMethodAsync(10);
+    }
+    ~WithAsyncMethod_SubscribeTopicEventsAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSubscribeTopicEventsAlpha1(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(10, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_InvokeBinding : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_InvokeBinding() {
-      ::grpc::Service::MarkMethodAsync(10);
+      ::grpc::Service::MarkMethodAsync(11);
     }
     ~WithAsyncMethod_InvokeBinding() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeBinding(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) override {
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestInvokeBinding(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::InvokeBindingResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_GetSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetSecret() {
-      ::grpc::Service::MarkMethodAsync(11);
+      ::grpc::Service::MarkMethodAsync(12);
     }
     ~WithAsyncMethod_GetSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response) override {
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetSecret(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::GetSecretRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetSecretResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_GetBulkSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetBulkSecret() {
-      ::grpc::Service::MarkMethodAsync(12);
+      ::grpc::Service::MarkMethodAsync(13);
     }
     ~WithAsyncMethod_GetBulkSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response) override {
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetBulkSecret(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetBulkSecretResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_RegisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_RegisterActorTimer() {
-      ::grpc::Service::MarkMethodAsync(13);
+      ::grpc::Service::MarkMethodAsync(14);
     }
     ~WithAsyncMethod_RegisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRegisterActorTimer(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_UnregisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UnregisterActorTimer() {
-      ::grpc::Service::MarkMethodAsync(14);
+      ::grpc::Service::MarkMethodAsync(15);
     }
     ~WithAsyncMethod_UnregisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUnregisterActorTimer(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_RegisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_RegisterActorReminder() {
-      ::grpc::Service::MarkMethodAsync(15);
+      ::grpc::Service::MarkMethodAsync(16);
     }
     ~WithAsyncMethod_RegisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRegisterActorReminder(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_UnregisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UnregisterActorReminder() {
-      ::grpc::Service::MarkMethodAsync(16);
+      ::grpc::Service::MarkMethodAsync(17);
     }
     ~WithAsyncMethod_UnregisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUnregisterActorReminder(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_RenameActorReminder : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_RenameActorReminder() {
-      ::grpc::Service::MarkMethodAsync(17);
-    }
-    ~WithAsyncMethod_RenameActorReminder() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RenameActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRenameActorReminder(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_GetActorState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetActorState() {
       ::grpc::Service::MarkMethodAsync(18);
@@ -1675,7 +3155,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActorState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) override {
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1686,7 +3166,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_ExecuteActorStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ExecuteActorStateTransaction() {
       ::grpc::Service::MarkMethodAsync(19);
@@ -1695,7 +3175,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1706,7 +3186,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_InvokeActor : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_InvokeActor() {
       ::grpc::Service::MarkMethodAsync(20);
@@ -1715,7 +3195,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeActor(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response) override {
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1726,7 +3206,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetConfigurationAlpha1() {
       ::grpc::Service::MarkMethodAsync(21);
@@ -1735,7 +3215,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1746,7 +3226,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetConfiguration() {
       ::grpc::Service::MarkMethodAsync(22);
@@ -1755,7 +3235,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1766,7 +3246,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodAsync(23);
@@ -1775,7 +3255,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1786,7 +3266,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubscribeConfiguration() {
       ::grpc::Service::MarkMethodAsync(24);
@@ -1795,7 +3275,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1806,7 +3286,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UnsubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodAsync(25);
@@ -1815,7 +3295,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1826,7 +3306,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_UnsubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UnsubscribeConfiguration() {
       ::grpc::Service::MarkMethodAsync(26);
@@ -1835,7 +3315,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1846,7 +3326,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_TryLockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_TryLockAlpha1() {
       ::grpc::Service::MarkMethodAsync(27);
@@ -1855,7 +3335,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response) override {
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1866,7 +3346,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_UnlockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UnlockAlpha1() {
       ::grpc::Service::MarkMethodAsync(28);
@@ -1875,7 +3355,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response) override {
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1886,7 +3366,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_EncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_EncryptAlpha1() {
       ::grpc::Service::MarkMethodAsync(29);
@@ -1895,7 +3375,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* stream)  override {
+    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1906,7 +3386,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_DecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_DecryptAlpha1() {
       ::grpc::Service::MarkMethodAsync(30);
@@ -1915,7 +3395,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* stream)  override {
+    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1926,7 +3406,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetMetadata() {
       ::grpc::Service::MarkMethodAsync(31);
@@ -1935,18 +3415,18 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetMetadata(::grpc::ServerContext* context, ::google::protobuf::Empty* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetMetadata(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(31, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithAsyncMethod_SetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SetMetadata() {
       ::grpc::Service::MarkMethodAsync(32);
@@ -1955,7 +3435,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1966,7 +3446,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleGetKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleGetKeyAlpha1() {
       ::grpc::Service::MarkMethodAsync(33);
@@ -1975,7 +3455,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response) override {
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1986,7 +3466,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleEncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleEncryptAlpha1() {
       ::grpc::Service::MarkMethodAsync(34);
@@ -1995,7 +3475,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response) override {
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2006,7 +3486,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleDecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleDecryptAlpha1() {
       ::grpc::Service::MarkMethodAsync(35);
@@ -2015,7 +3495,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response) override {
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2026,7 +3506,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleWrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleWrapKeyAlpha1() {
       ::grpc::Service::MarkMethodAsync(36);
@@ -2035,7 +3515,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response) override {
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2046,7 +3526,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleUnwrapKeyAlpha1() {
       ::grpc::Service::MarkMethodAsync(37);
@@ -2055,7 +3535,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response) override {
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2066,7 +3546,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleSignAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleSignAlpha1() {
       ::grpc::Service::MarkMethodAsync(38);
@@ -2075,7 +3555,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response) override {
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2086,7 +3566,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_SubtleVerifyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SubtleVerifyAlpha1() {
       ::grpc::Service::MarkMethodAsync(39);
@@ -2095,7 +3575,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response) override {
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2106,7 +3586,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_StartWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_StartWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(40);
@@ -2115,7 +3595,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) override {
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2126,7 +3606,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_GetWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(41);
@@ -2135,7 +3615,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) override {
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2146,7 +3626,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_PurgeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_PurgeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(42);
@@ -2155,7 +3635,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2166,7 +3646,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_TerminateWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_TerminateWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(43);
@@ -2175,7 +3655,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2186,7 +3666,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_PauseWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_PauseWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(44);
@@ -2195,7 +3675,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2206,7 +3686,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_ResumeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ResumeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(45);
@@ -2215,7 +3695,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2226,7 +3706,7 @@ class Dapr final {
   template <class BaseClass>
   class WithAsyncMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_RaiseEventWorkflowAlpha1() {
       ::grpc::Service::MarkMethodAsync(46);
@@ -2235,7 +3715,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2244,30 +3724,2916 @@ class Dapr final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_StartWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(47);
+    }
+    ~WithAsyncMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestStartWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::StartWorkflowResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(47, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GetWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(48);
+    }
+    ~WithAsyncMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetWorkflowResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(48, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_PurgeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(49);
+    }
+    ~WithAsyncMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPurgeWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(49, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_TerminateWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(50);
+    }
+    ~WithAsyncMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTerminateWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(50, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_PauseWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(51);
+    }
+    ~WithAsyncMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPauseWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(51, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ResumeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(52);
+    }
+    ~WithAsyncMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestResumeWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(52, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_RaiseEventWorkflowBeta1() {
+      ::grpc::Service::MarkMethodAsync(53);
+    }
+    ~WithAsyncMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRaiseEventWorkflowBeta1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(53, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_Shutdown : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_Shutdown() {
-      ::grpc::Service::MarkMethodAsync(47);
+      ::grpc::Service::MarkMethodAsync(54);
     }
     ~WithAsyncMethod_Shutdown() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestShutdown(::grpc::ServerContext* context, ::google::protobuf::Empty* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(47, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestShutdown(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::ShutdownRequest* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(54, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_InvokeService<WithAsyncMethod_GetState<WithAsyncMethod_GetBulkState<WithAsyncMethod_SaveState<WithAsyncMethod_QueryStateAlpha1<WithAsyncMethod_DeleteState<WithAsyncMethod_DeleteBulkState<WithAsyncMethod_ExecuteStateTransaction<WithAsyncMethod_PublishEvent<WithAsyncMethod_BulkPublishEventAlpha1<WithAsyncMethod_InvokeBinding<WithAsyncMethod_GetSecret<WithAsyncMethod_GetBulkSecret<WithAsyncMethod_RegisterActorTimer<WithAsyncMethod_UnregisterActorTimer<WithAsyncMethod_RegisterActorReminder<WithAsyncMethod_UnregisterActorReminder<WithAsyncMethod_RenameActorReminder<WithAsyncMethod_GetActorState<WithAsyncMethod_ExecuteActorStateTransaction<WithAsyncMethod_InvokeActor<WithAsyncMethod_GetConfigurationAlpha1<WithAsyncMethod_GetConfiguration<WithAsyncMethod_SubscribeConfigurationAlpha1<WithAsyncMethod_SubscribeConfiguration<WithAsyncMethod_UnsubscribeConfigurationAlpha1<WithAsyncMethod_UnsubscribeConfiguration<WithAsyncMethod_TryLockAlpha1<WithAsyncMethod_UnlockAlpha1<WithAsyncMethod_EncryptAlpha1<WithAsyncMethod_DecryptAlpha1<WithAsyncMethod_GetMetadata<WithAsyncMethod_SetMetadata<WithAsyncMethod_SubtleGetKeyAlpha1<WithAsyncMethod_SubtleEncryptAlpha1<WithAsyncMethod_SubtleDecryptAlpha1<WithAsyncMethod_SubtleWrapKeyAlpha1<WithAsyncMethod_SubtleUnwrapKeyAlpha1<WithAsyncMethod_SubtleSignAlpha1<WithAsyncMethod_SubtleVerifyAlpha1<WithAsyncMethod_StartWorkflowAlpha1<WithAsyncMethod_GetWorkflowAlpha1<WithAsyncMethod_PurgeWorkflowAlpha1<WithAsyncMethod_TerminateWorkflowAlpha1<WithAsyncMethod_PauseWorkflowAlpha1<WithAsyncMethod_ResumeWorkflowAlpha1<WithAsyncMethod_RaiseEventWorkflowAlpha1<WithAsyncMethod_Shutdown<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ScheduleJobAlpha1() {
+      ::grpc::Service::MarkMethodAsync(55);
+    }
+    ~WithAsyncMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestScheduleJobAlpha1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::ScheduleJobResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(55, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GetJobAlpha1() {
+      ::grpc::Service::MarkMethodAsync(56);
+    }
+    ~WithAsyncMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetJobAlpha1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::GetJobRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::GetJobResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(56, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_DeleteJobAlpha1() {
+      ::grpc::Service::MarkMethodAsync(57);
+    }
+    ~WithAsyncMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestDeleteJobAlpha1(::grpc::ServerContext* context, ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::grpc::ServerAsyncResponseWriter< ::dapr::proto::runtime::v1::DeleteJobResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(57, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_InvokeService<WithAsyncMethod_GetState<WithAsyncMethod_GetBulkState<WithAsyncMethod_SaveState<WithAsyncMethod_QueryStateAlpha1<WithAsyncMethod_DeleteState<WithAsyncMethod_DeleteBulkState<WithAsyncMethod_ExecuteStateTransaction<WithAsyncMethod_PublishEvent<WithAsyncMethod_BulkPublishEventAlpha1<WithAsyncMethod_SubscribeTopicEventsAlpha1<WithAsyncMethod_InvokeBinding<WithAsyncMethod_GetSecret<WithAsyncMethod_GetBulkSecret<WithAsyncMethod_RegisterActorTimer<WithAsyncMethod_UnregisterActorTimer<WithAsyncMethod_RegisterActorReminder<WithAsyncMethod_UnregisterActorReminder<WithAsyncMethod_GetActorState<WithAsyncMethod_ExecuteActorStateTransaction<WithAsyncMethod_InvokeActor<WithAsyncMethod_GetConfigurationAlpha1<WithAsyncMethod_GetConfiguration<WithAsyncMethod_SubscribeConfigurationAlpha1<WithAsyncMethod_SubscribeConfiguration<WithAsyncMethod_UnsubscribeConfigurationAlpha1<WithAsyncMethod_UnsubscribeConfiguration<WithAsyncMethod_TryLockAlpha1<WithAsyncMethod_UnlockAlpha1<WithAsyncMethod_EncryptAlpha1<WithAsyncMethod_DecryptAlpha1<WithAsyncMethod_GetMetadata<WithAsyncMethod_SetMetadata<WithAsyncMethod_SubtleGetKeyAlpha1<WithAsyncMethod_SubtleEncryptAlpha1<WithAsyncMethod_SubtleDecryptAlpha1<WithAsyncMethod_SubtleWrapKeyAlpha1<WithAsyncMethod_SubtleUnwrapKeyAlpha1<WithAsyncMethod_SubtleSignAlpha1<WithAsyncMethod_SubtleVerifyAlpha1<WithAsyncMethod_StartWorkflowAlpha1<WithAsyncMethod_GetWorkflowAlpha1<WithAsyncMethod_PurgeWorkflowAlpha1<WithAsyncMethod_TerminateWorkflowAlpha1<WithAsyncMethod_PauseWorkflowAlpha1<WithAsyncMethod_ResumeWorkflowAlpha1<WithAsyncMethod_RaiseEventWorkflowAlpha1<WithAsyncMethod_StartWorkflowBeta1<WithAsyncMethod_GetWorkflowBeta1<WithAsyncMethod_PurgeWorkflowBeta1<WithAsyncMethod_TerminateWorkflowBeta1<WithAsyncMethod_PauseWorkflowBeta1<WithAsyncMethod_ResumeWorkflowBeta1<WithAsyncMethod_RaiseEventWorkflowBeta1<WithAsyncMethod_Shutdown<WithAsyncMethod_ScheduleJobAlpha1<WithAsyncMethod_GetJobAlpha1<WithAsyncMethod_DeleteJobAlpha1<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_InvokeService : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_InvokeService() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(0,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response) { return this->InvokeService(context, request, response); }));}
+    void SetMessageAllocatorFor_InvokeService(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(0);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_InvokeService() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeService(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeService(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(1,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response) { return this->GetState(context, request, response); }));}
+    void SetMessageAllocatorFor_GetState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetBulkState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetBulkState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(2,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response) { return this->GetBulkState(context, request, response); }));}
+    void SetMessageAllocatorFor_GetBulkState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetBulkState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetBulkState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetBulkState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SaveState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SaveState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(3,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response) { return this->SaveState(context, request, response); }));}
+    void SetMessageAllocatorFor_SaveState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(3);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SaveState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SaveState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SaveState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_QueryStateAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_QueryStateAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(4,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response) { return this->QueryStateAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_QueryStateAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(4);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_QueryStateAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* QueryStateAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* QueryStateAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_DeleteState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_DeleteState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(5,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response) { return this->DeleteState(context, request, response); }));}
+    void SetMessageAllocatorFor_DeleteState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(5);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_DeleteState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_DeleteBulkState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_DeleteBulkState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(6,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response) { return this->DeleteBulkState(context, request, response); }));}
+    void SetMessageAllocatorFor_DeleteBulkState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(6);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_DeleteBulkState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteBulkState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteBulkState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_ExecuteStateTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_ExecuteStateTransaction() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(7,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response) { return this->ExecuteStateTransaction(context, request, response); }));}
+    void SetMessageAllocatorFor_ExecuteStateTransaction(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(7);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_ExecuteStateTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ExecuteStateTransaction(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ExecuteStateTransaction(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PublishEvent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PublishEvent() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response) { return this->PublishEvent(context, request, response); }));}
+    void SetMessageAllocatorFor_PublishEvent(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(8);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PublishEvent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PublishEvent(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PublishEvent(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_BulkPublishEventAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_BulkPublishEventAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(9,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response) { return this->BulkPublishEventAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_BulkPublishEventAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(9);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_BulkPublishEventAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* BulkPublishEventAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* BulkPublishEventAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubscribeTopicEventsAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubscribeTopicEventsAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(10,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->SubscribeTopicEventsAlpha1(context); }));
+    }
+    ~ExperimentalWithCallbackMethod_SubscribeTopicEventsAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* SubscribeTopicEventsAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1>* SubscribeTopicEventsAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_InvokeBinding : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_InvokeBinding() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(11,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) { return this->InvokeBinding(context, request, response); }));}
+    void SetMessageAllocatorFor_InvokeBinding(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(11);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(11);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_InvokeBinding() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeBinding(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeBinding(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetSecret : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetSecret() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(12,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response) { return this->GetSecret(context, request, response); }));}
+    void SetMessageAllocatorFor_GetSecret(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(12);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(12);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetSecret() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetSecret(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetSecret(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetBulkSecret : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetBulkSecret() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(13,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response) { return this->GetBulkSecret(context, request, response); }));}
+    void SetMessageAllocatorFor_GetBulkSecret(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(13);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetBulkSecret() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetBulkSecret(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetBulkSecret(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_RegisterActorTimer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_RegisterActorTimer() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(14,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response) { return this->RegisterActorTimer(context, request, response); }));}
+    void SetMessageAllocatorFor_RegisterActorTimer(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(14);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_RegisterActorTimer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RegisterActorTimer(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RegisterActorTimer(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnregisterActorTimer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_UnregisterActorTimer() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(15,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response) { return this->UnregisterActorTimer(context, request, response); }));}
+    void SetMessageAllocatorFor_UnregisterActorTimer(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(15);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_UnregisterActorTimer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnregisterActorTimer(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnregisterActorTimer(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_RegisterActorReminder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_RegisterActorReminder() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(16,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response) { return this->RegisterActorReminder(context, request, response); }));}
+    void SetMessageAllocatorFor_RegisterActorReminder(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(16);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(16);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_RegisterActorReminder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RegisterActorReminder(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RegisterActorReminder(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnregisterActorReminder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_UnregisterActorReminder() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(17,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response) { return this->UnregisterActorReminder(context, request, response); }));}
+    void SetMessageAllocatorFor_UnregisterActorReminder(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(17);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(17);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_UnregisterActorReminder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnregisterActorReminder(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnregisterActorReminder(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetActorState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetActorState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(18,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) { return this->GetActorState(context, request, response); }));}
+    void SetMessageAllocatorFor_GetActorState(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(18);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(18);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetActorState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetActorState(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetActorState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_ExecuteActorStateTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_ExecuteActorStateTransaction() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(19,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response) { return this->ExecuteActorStateTransaction(context, request, response); }));}
+    void SetMessageAllocatorFor_ExecuteActorStateTransaction(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(19);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(19);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_ExecuteActorStateTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ExecuteActorStateTransaction(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ExecuteActorStateTransaction(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_InvokeActor : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_InvokeActor() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(20,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response) { return this->InvokeActor(context, request, response); }));}
+    void SetMessageAllocatorFor_InvokeActor(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(20);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(20);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_InvokeActor() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeActor(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeActor(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(21,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) { return this->GetConfigurationAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_GetConfigurationAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(21);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(21);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(22,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) { return this->GetConfiguration(context, request, response); }));}
+    void SetMessageAllocatorFor_GetConfiguration(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(22);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(22);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubscribeConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubscribeConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(23,
+          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request) { return this->SubscribeConfigurationAlpha1(context, request); }));
+    }
+    ~ExperimentalWithCallbackMethod_SubscribeConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerWriteReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* SubscribeConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/)
+    #else
+    virtual ::grpc::experimental::ServerWriteReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* SubscribeConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubscribeConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubscribeConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(24,
+          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request) { return this->SubscribeConfiguration(context, request); }));
+    }
+    ~ExperimentalWithCallbackMethod_SubscribeConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerWriteReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* SubscribeConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/)
+    #else
+    virtual ::grpc::experimental::ServerWriteReactor< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* SubscribeConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_UnsubscribeConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(25,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) { return this->UnsubscribeConfigurationAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_UnsubscribeConfigurationAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(25);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(25);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_UnsubscribeConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnsubscribeConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnsubscribeConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnsubscribeConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_UnsubscribeConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(26,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) { return this->UnsubscribeConfiguration(context, request, response); }));}
+    void SetMessageAllocatorFor_UnsubscribeConfiguration(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(26);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(26);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_UnsubscribeConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnsubscribeConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnsubscribeConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_TryLockAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_TryLockAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(27,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response) { return this->TryLockAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_TryLockAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(27);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(27);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_TryLockAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TryLockAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TryLockAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnlockAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_UnlockAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(28,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response) { return this->UnlockAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_UnlockAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(28);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(28);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_UnlockAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnlockAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnlockAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_EncryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_EncryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(29,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::dapr::proto::runtime::v1::EncryptRequest, ::dapr::proto::runtime::v1::EncryptResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->EncryptAlpha1(context); }));
+    }
+    ~ExperimentalWithCallbackMethod_EncryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest, ::dapr::proto::runtime::v1::EncryptResponse>* EncryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::dapr::proto::runtime::v1::EncryptRequest, ::dapr::proto::runtime::v1::EncryptResponse>* EncryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_DecryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_DecryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(30,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->DecryptAlpha1(context); }));
+    }
+    ~ExperimentalWithCallbackMethod_DecryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* DecryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::dapr::proto::runtime::v1::DecryptRequest, ::dapr::proto::runtime::v1::DecryptResponse>* DecryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetMetadata : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetMetadata() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(31,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetMetadataRequest, ::dapr::proto::runtime::v1::GetMetadataResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetMetadataRequest* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) { return this->GetMetadata(context, request, response); }));}
+    void SetMessageAllocatorFor_GetMetadata(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetMetadataRequest, ::dapr::proto::runtime::v1::GetMetadataResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(31);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(31);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetMetadataRequest, ::dapr::proto::runtime::v1::GetMetadataResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetMetadata() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetMetadata(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetMetadata(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SetMetadata : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SetMetadata() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(32,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response) { return this->SetMetadata(context, request, response); }));}
+    void SetMessageAllocatorFor_SetMetadata(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(32);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(32);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SetMetadata() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SetMetadata(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SetMetadata(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleGetKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleGetKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(33,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response) { return this->SubtleGetKeyAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleGetKeyAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(33);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(33);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleGetKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleGetKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleGetKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleEncryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleEncryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(34,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response) { return this->SubtleEncryptAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleEncryptAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(34);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(34);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleEncryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleEncryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleEncryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleDecryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleDecryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(35,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response) { return this->SubtleDecryptAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleDecryptAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(35);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(35);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleDecryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleDecryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleDecryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleWrapKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleWrapKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(36,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response) { return this->SubtleWrapKeyAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleWrapKeyAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(36);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(36);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleWrapKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleWrapKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleWrapKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleUnwrapKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(37,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response) { return this->SubtleUnwrapKeyAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleUnwrapKeyAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(37);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(37);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleUnwrapKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleUnwrapKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleUnwrapKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleSignAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleSignAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(38,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response) { return this->SubtleSignAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleSignAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(38);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(38);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleSignAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleSignAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleSignAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SubtleVerifyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_SubtleVerifyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(39,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response) { return this->SubtleVerifyAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_SubtleVerifyAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(39);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(39);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_SubtleVerifyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleVerifyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleVerifyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_StartWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_StartWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(40,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) { return this->StartWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_StartWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(40);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(40);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_StartWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* StartWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* StartWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(41,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) { return this->GetWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_GetWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(41);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(41);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PurgeWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PurgeWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(42,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->PurgeWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_PurgeWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(42);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(42);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PurgeWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PurgeWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PurgeWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_TerminateWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_TerminateWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(43,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->TerminateWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_TerminateWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(43);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(43);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_TerminateWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TerminateWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TerminateWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PauseWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PauseWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(44,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->PauseWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_PauseWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(44);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(44);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PauseWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PauseWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PauseWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_ResumeWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_ResumeWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(45,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->ResumeWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_ResumeWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(45);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(45);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_ResumeWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ResumeWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ResumeWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_RaiseEventWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(46,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->RaiseEventWorkflowAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_RaiseEventWorkflowAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(46);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(46);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_RaiseEventWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RaiseEventWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RaiseEventWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_StartWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(47,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) { return this->StartWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_StartWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(47);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(47);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* StartWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* StartWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(48,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) { return this->GetWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_GetWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(48);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(48);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PurgeWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(49,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->PurgeWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_PurgeWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(49);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(49);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PurgeWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PurgeWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_TerminateWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(50,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->TerminateWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_TerminateWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(50);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(50);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TerminateWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TerminateWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PauseWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(51,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->PauseWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_PauseWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(51);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(51);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PauseWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PauseWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_ResumeWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(52,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->ResumeWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_ResumeWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(52);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(52);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ResumeWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ResumeWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_RaiseEventWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(53,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) { return this->RaiseEventWorkflowBeta1(context, request, response); }));}
+    void SetMessageAllocatorFor_RaiseEventWorkflowBeta1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(53);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(53);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RaiseEventWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RaiseEventWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_Shutdown : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_Shutdown() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(54,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ShutdownRequest, ::google::protobuf::Empty>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ShutdownRequest* request, ::google::protobuf::Empty* response) { return this->Shutdown(context, request, response); }));}
+    void SetMessageAllocatorFor_Shutdown(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ShutdownRequest, ::google::protobuf::Empty>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(54);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(54);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ShutdownRequest, ::google::protobuf::Empty>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_Shutdown() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Shutdown(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Shutdown(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_ScheduleJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(55,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ScheduleJobRequest, ::dapr::proto::runtime::v1::ScheduleJobResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::ScheduleJobRequest* request, ::dapr::proto::runtime::v1::ScheduleJobResponse* response) { return this->ScheduleJobAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_ScheduleJobAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::ScheduleJobRequest, ::dapr::proto::runtime::v1::ScheduleJobResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(55);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(55);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::ScheduleJobRequest, ::dapr::proto::runtime::v1::ScheduleJobResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ScheduleJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ScheduleJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(56,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetJobRequest, ::dapr::proto::runtime::v1::GetJobResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::GetJobRequest* request, ::dapr::proto::runtime::v1::GetJobResponse* response) { return this->GetJobAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_GetJobAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::GetJobRequest, ::dapr::proto::runtime::v1::GetJobResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(56);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(56);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::GetJobRequest, ::dapr::proto::runtime::v1::GetJobResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_DeleteJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(57,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteJobRequest, ::dapr::proto::runtime::v1::DeleteJobResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::dapr::proto::runtime::v1::DeleteJobRequest* request, ::dapr::proto::runtime::v1::DeleteJobResponse* response) { return this->DeleteJobAlpha1(context, request, response); }));}
+    void SetMessageAllocatorFor_DeleteJobAlpha1(
+        ::grpc::experimental::MessageAllocator< ::dapr::proto::runtime::v1::DeleteJobRequest, ::dapr::proto::runtime::v1::DeleteJobResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(57);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(57);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::dapr::proto::runtime::v1::DeleteJobRequest, ::dapr::proto::runtime::v1::DeleteJobResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+  typedef ExperimentalWithCallbackMethod_InvokeService<ExperimentalWithCallbackMethod_GetState<ExperimentalWithCallbackMethod_GetBulkState<ExperimentalWithCallbackMethod_SaveState<ExperimentalWithCallbackMethod_QueryStateAlpha1<ExperimentalWithCallbackMethod_DeleteState<ExperimentalWithCallbackMethod_DeleteBulkState<ExperimentalWithCallbackMethod_ExecuteStateTransaction<ExperimentalWithCallbackMethod_PublishEvent<ExperimentalWithCallbackMethod_BulkPublishEventAlpha1<ExperimentalWithCallbackMethod_SubscribeTopicEventsAlpha1<ExperimentalWithCallbackMethod_InvokeBinding<ExperimentalWithCallbackMethod_GetSecret<ExperimentalWithCallbackMethod_GetBulkSecret<ExperimentalWithCallbackMethod_RegisterActorTimer<ExperimentalWithCallbackMethod_UnregisterActorTimer<ExperimentalWithCallbackMethod_RegisterActorReminder<ExperimentalWithCallbackMethod_UnregisterActorReminder<ExperimentalWithCallbackMethod_GetActorState<ExperimentalWithCallbackMethod_ExecuteActorStateTransaction<ExperimentalWithCallbackMethod_InvokeActor<ExperimentalWithCallbackMethod_GetConfigurationAlpha1<ExperimentalWithCallbackMethod_GetConfiguration<ExperimentalWithCallbackMethod_SubscribeConfigurationAlpha1<ExperimentalWithCallbackMethod_SubscribeConfiguration<ExperimentalWithCallbackMethod_UnsubscribeConfigurationAlpha1<ExperimentalWithCallbackMethod_UnsubscribeConfiguration<ExperimentalWithCallbackMethod_TryLockAlpha1<ExperimentalWithCallbackMethod_UnlockAlpha1<ExperimentalWithCallbackMethod_EncryptAlpha1<ExperimentalWithCallbackMethod_DecryptAlpha1<ExperimentalWithCallbackMethod_GetMetadata<ExperimentalWithCallbackMethod_SetMetadata<ExperimentalWithCallbackMethod_SubtleGetKeyAlpha1<ExperimentalWithCallbackMethod_SubtleEncryptAlpha1<ExperimentalWithCallbackMethod_SubtleDecryptAlpha1<ExperimentalWithCallbackMethod_SubtleWrapKeyAlpha1<ExperimentalWithCallbackMethod_SubtleUnwrapKeyAlpha1<ExperimentalWithCallbackMethod_SubtleSignAlpha1<ExperimentalWithCallbackMethod_SubtleVerifyAlpha1<ExperimentalWithCallbackMethod_StartWorkflowAlpha1<ExperimentalWithCallbackMethod_GetWorkflowAlpha1<ExperimentalWithCallbackMethod_PurgeWorkflowAlpha1<ExperimentalWithCallbackMethod_TerminateWorkflowAlpha1<ExperimentalWithCallbackMethod_PauseWorkflowAlpha1<ExperimentalWithCallbackMethod_ResumeWorkflowAlpha1<ExperimentalWithCallbackMethod_RaiseEventWorkflowAlpha1<ExperimentalWithCallbackMethod_StartWorkflowBeta1<ExperimentalWithCallbackMethod_GetWorkflowBeta1<ExperimentalWithCallbackMethod_PurgeWorkflowBeta1<ExperimentalWithCallbackMethod_TerminateWorkflowBeta1<ExperimentalWithCallbackMethod_PauseWorkflowBeta1<ExperimentalWithCallbackMethod_ResumeWorkflowBeta1<ExperimentalWithCallbackMethod_RaiseEventWorkflowBeta1<ExperimentalWithCallbackMethod_Shutdown<ExperimentalWithCallbackMethod_ScheduleJobAlpha1<ExperimentalWithCallbackMethod_GetJobAlpha1<ExperimentalWithCallbackMethod_DeleteJobAlpha1<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > CallbackService;
+  #endif
+
+  typedef ExperimentalWithCallbackMethod_InvokeService<ExperimentalWithCallbackMethod_GetState<ExperimentalWithCallbackMethod_GetBulkState<ExperimentalWithCallbackMethod_SaveState<ExperimentalWithCallbackMethod_QueryStateAlpha1<ExperimentalWithCallbackMethod_DeleteState<ExperimentalWithCallbackMethod_DeleteBulkState<ExperimentalWithCallbackMethod_ExecuteStateTransaction<ExperimentalWithCallbackMethod_PublishEvent<ExperimentalWithCallbackMethod_BulkPublishEventAlpha1<ExperimentalWithCallbackMethod_SubscribeTopicEventsAlpha1<ExperimentalWithCallbackMethod_InvokeBinding<ExperimentalWithCallbackMethod_GetSecret<ExperimentalWithCallbackMethod_GetBulkSecret<ExperimentalWithCallbackMethod_RegisterActorTimer<ExperimentalWithCallbackMethod_UnregisterActorTimer<ExperimentalWithCallbackMethod_RegisterActorReminder<ExperimentalWithCallbackMethod_UnregisterActorReminder<ExperimentalWithCallbackMethod_GetActorState<ExperimentalWithCallbackMethod_ExecuteActorStateTransaction<ExperimentalWithCallbackMethod_InvokeActor<ExperimentalWithCallbackMethod_GetConfigurationAlpha1<ExperimentalWithCallbackMethod_GetConfiguration<ExperimentalWithCallbackMethod_SubscribeConfigurationAlpha1<ExperimentalWithCallbackMethod_SubscribeConfiguration<ExperimentalWithCallbackMethod_UnsubscribeConfigurationAlpha1<ExperimentalWithCallbackMethod_UnsubscribeConfiguration<ExperimentalWithCallbackMethod_TryLockAlpha1<ExperimentalWithCallbackMethod_UnlockAlpha1<ExperimentalWithCallbackMethod_EncryptAlpha1<ExperimentalWithCallbackMethod_DecryptAlpha1<ExperimentalWithCallbackMethod_GetMetadata<ExperimentalWithCallbackMethod_SetMetadata<ExperimentalWithCallbackMethod_SubtleGetKeyAlpha1<ExperimentalWithCallbackMethod_SubtleEncryptAlpha1<ExperimentalWithCallbackMethod_SubtleDecryptAlpha1<ExperimentalWithCallbackMethod_SubtleWrapKeyAlpha1<ExperimentalWithCallbackMethod_SubtleUnwrapKeyAlpha1<ExperimentalWithCallbackMethod_SubtleSignAlpha1<ExperimentalWithCallbackMethod_SubtleVerifyAlpha1<ExperimentalWithCallbackMethod_StartWorkflowAlpha1<ExperimentalWithCallbackMethod_GetWorkflowAlpha1<ExperimentalWithCallbackMethod_PurgeWorkflowAlpha1<ExperimentalWithCallbackMethod_TerminateWorkflowAlpha1<ExperimentalWithCallbackMethod_PauseWorkflowAlpha1<ExperimentalWithCallbackMethod_ResumeWorkflowAlpha1<ExperimentalWithCallbackMethod_RaiseEventWorkflowAlpha1<ExperimentalWithCallbackMethod_StartWorkflowBeta1<ExperimentalWithCallbackMethod_GetWorkflowBeta1<ExperimentalWithCallbackMethod_PurgeWorkflowBeta1<ExperimentalWithCallbackMethod_TerminateWorkflowBeta1<ExperimentalWithCallbackMethod_PauseWorkflowBeta1<ExperimentalWithCallbackMethod_ResumeWorkflowBeta1<ExperimentalWithCallbackMethod_RaiseEventWorkflowBeta1<ExperimentalWithCallbackMethod_Shutdown<ExperimentalWithCallbackMethod_ScheduleJobAlpha1<ExperimentalWithCallbackMethod_GetJobAlpha1<ExperimentalWithCallbackMethod_DeleteJobAlpha1<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_InvokeService : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_InvokeService() {
       ::grpc::Service::MarkMethodGeneric(0);
@@ -2276,7 +6642,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeService(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response) override {
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2284,7 +6650,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetState() {
       ::grpc::Service::MarkMethodGeneric(1);
@@ -2293,7 +6659,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response) override {
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2301,7 +6667,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetBulkState() {
       ::grpc::Service::MarkMethodGeneric(2);
@@ -2310,7 +6676,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response) override {
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2318,7 +6684,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SaveState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SaveState() {
       ::grpc::Service::MarkMethodGeneric(3);
@@ -2327,7 +6693,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SaveState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2335,7 +6701,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_QueryStateAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_QueryStateAlpha1() {
       ::grpc::Service::MarkMethodGeneric(4);
@@ -2344,7 +6710,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response) override {
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2352,7 +6718,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_DeleteState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_DeleteState() {
       ::grpc::Service::MarkMethodGeneric(5);
@@ -2361,7 +6727,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2369,7 +6735,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_DeleteBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_DeleteBulkState() {
       ::grpc::Service::MarkMethodGeneric(6);
@@ -2378,7 +6744,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2386,7 +6752,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_ExecuteStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ExecuteStateTransaction() {
       ::grpc::Service::MarkMethodGeneric(7);
@@ -2395,7 +6761,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2403,7 +6769,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_PublishEvent : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_PublishEvent() {
       ::grpc::Service::MarkMethodGeneric(8);
@@ -2412,7 +6778,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PublishEvent(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2420,7 +6786,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_BulkPublishEventAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_BulkPublishEventAlpha1() {
       ::grpc::Service::MarkMethodGeneric(9);
@@ -2429,7 +6795,24 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response) override {
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SubscribeTopicEventsAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_SubscribeTopicEventsAlpha1() {
+      ::grpc::Service::MarkMethodGeneric(10);
+    }
+    ~WithGenericMethod_SubscribeTopicEventsAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2437,16 +6820,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_InvokeBinding : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_InvokeBinding() {
-      ::grpc::Service::MarkMethodGeneric(10);
+      ::grpc::Service::MarkMethodGeneric(11);
     }
     ~WithGenericMethod_InvokeBinding() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeBinding(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) override {
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2454,16 +6837,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetSecret() {
-      ::grpc::Service::MarkMethodGeneric(11);
+      ::grpc::Service::MarkMethodGeneric(12);
     }
     ~WithGenericMethod_GetSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response) override {
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2471,16 +6854,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetBulkSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetBulkSecret() {
-      ::grpc::Service::MarkMethodGeneric(12);
+      ::grpc::Service::MarkMethodGeneric(13);
     }
     ~WithGenericMethod_GetBulkSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response) override {
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2488,16 +6871,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_RegisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_RegisterActorTimer() {
-      ::grpc::Service::MarkMethodGeneric(13);
+      ::grpc::Service::MarkMethodGeneric(14);
     }
     ~WithGenericMethod_RegisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2505,16 +6888,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_UnregisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UnregisterActorTimer() {
-      ::grpc::Service::MarkMethodGeneric(14);
+      ::grpc::Service::MarkMethodGeneric(15);
     }
     ~WithGenericMethod_UnregisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2522,16 +6905,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_RegisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_RegisterActorReminder() {
-      ::grpc::Service::MarkMethodGeneric(15);
+      ::grpc::Service::MarkMethodGeneric(16);
     }
     ~WithGenericMethod_RegisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2539,33 +6922,16 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_UnregisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UnregisterActorReminder() {
-      ::grpc::Service::MarkMethodGeneric(16);
+      ::grpc::Service::MarkMethodGeneric(17);
     }
     ~WithGenericMethod_UnregisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_RenameActorReminder : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithGenericMethod_RenameActorReminder() {
-      ::grpc::Service::MarkMethodGeneric(17);
-    }
-    ~WithGenericMethod_RenameActorReminder() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RenameActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2573,7 +6939,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetActorState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetActorState() {
       ::grpc::Service::MarkMethodGeneric(18);
@@ -2582,7 +6948,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActorState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) override {
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2590,7 +6956,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_ExecuteActorStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ExecuteActorStateTransaction() {
       ::grpc::Service::MarkMethodGeneric(19);
@@ -2599,7 +6965,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2607,7 +6973,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_InvokeActor : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_InvokeActor() {
       ::grpc::Service::MarkMethodGeneric(20);
@@ -2616,7 +6982,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeActor(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response) override {
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2624,7 +6990,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetConfigurationAlpha1() {
       ::grpc::Service::MarkMethodGeneric(21);
@@ -2633,7 +6999,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2641,7 +7007,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetConfiguration() {
       ::grpc::Service::MarkMethodGeneric(22);
@@ -2650,7 +7016,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2658,7 +7024,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodGeneric(23);
@@ -2667,7 +7033,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2675,7 +7041,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubscribeConfiguration() {
       ::grpc::Service::MarkMethodGeneric(24);
@@ -2684,7 +7050,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2692,7 +7058,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UnsubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodGeneric(25);
@@ -2701,7 +7067,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2709,7 +7075,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_UnsubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UnsubscribeConfiguration() {
       ::grpc::Service::MarkMethodGeneric(26);
@@ -2718,7 +7084,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2726,7 +7092,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_TryLockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_TryLockAlpha1() {
       ::grpc::Service::MarkMethodGeneric(27);
@@ -2735,7 +7101,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response) override {
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2743,7 +7109,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_UnlockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UnlockAlpha1() {
       ::grpc::Service::MarkMethodGeneric(28);
@@ -2752,7 +7118,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response) override {
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2760,7 +7126,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_EncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_EncryptAlpha1() {
       ::grpc::Service::MarkMethodGeneric(29);
@@ -2769,7 +7135,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* stream)  override {
+    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2777,7 +7143,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_DecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_DecryptAlpha1() {
       ::grpc::Service::MarkMethodGeneric(30);
@@ -2786,7 +7152,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* stream)  override {
+    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2794,7 +7160,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetMetadata() {
       ::grpc::Service::MarkMethodGeneric(31);
@@ -2803,7 +7169,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2811,7 +7177,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SetMetadata() {
       ::grpc::Service::MarkMethodGeneric(32);
@@ -2820,7 +7186,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2828,7 +7194,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleGetKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleGetKeyAlpha1() {
       ::grpc::Service::MarkMethodGeneric(33);
@@ -2837,7 +7203,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response) override {
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2845,7 +7211,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleEncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleEncryptAlpha1() {
       ::grpc::Service::MarkMethodGeneric(34);
@@ -2854,7 +7220,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response) override {
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2862,7 +7228,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleDecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleDecryptAlpha1() {
       ::grpc::Service::MarkMethodGeneric(35);
@@ -2871,7 +7237,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response) override {
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2879,7 +7245,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleWrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleWrapKeyAlpha1() {
       ::grpc::Service::MarkMethodGeneric(36);
@@ -2888,7 +7254,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response) override {
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2896,7 +7262,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleUnwrapKeyAlpha1() {
       ::grpc::Service::MarkMethodGeneric(37);
@@ -2905,7 +7271,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response) override {
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2913,7 +7279,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleSignAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleSignAlpha1() {
       ::grpc::Service::MarkMethodGeneric(38);
@@ -2922,7 +7288,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response) override {
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2930,7 +7296,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_SubtleVerifyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SubtleVerifyAlpha1() {
       ::grpc::Service::MarkMethodGeneric(39);
@@ -2939,7 +7305,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response) override {
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2947,7 +7313,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_StartWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_StartWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(40);
@@ -2956,7 +7322,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) override {
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2964,7 +7330,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_GetWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(41);
@@ -2973,7 +7339,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) override {
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2981,7 +7347,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_PurgeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_PurgeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(42);
@@ -2990,7 +7356,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2998,7 +7364,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_TerminateWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_TerminateWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(43);
@@ -3007,7 +7373,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3015,7 +7381,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_PauseWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_PauseWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(44);
@@ -3024,7 +7390,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3032,7 +7398,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_ResumeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ResumeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(45);
@@ -3041,7 +7407,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3049,7 +7415,7 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_RaiseEventWorkflowAlpha1() {
       ::grpc::Service::MarkMethodGeneric(46);
@@ -3058,7 +7424,126 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_StartWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(47);
+    }
+    ~WithGenericMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GetWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(48);
+    }
+    ~WithGenericMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_PurgeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(49);
+    }
+    ~WithGenericMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_TerminateWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(50);
+    }
+    ~WithGenericMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_PauseWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(51);
+    }
+    ~WithGenericMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ResumeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(52);
+    }
+    ~WithGenericMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_RaiseEventWorkflowBeta1() {
+      ::grpc::Service::MarkMethodGeneric(53);
+    }
+    ~WithGenericMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3066,16 +7551,67 @@ class Dapr final {
   template <class BaseClass>
   class WithGenericMethod_Shutdown : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_Shutdown() {
-      ::grpc::Service::MarkMethodGeneric(47);
+      ::grpc::Service::MarkMethodGeneric(54);
     }
     ~WithGenericMethod_Shutdown() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ScheduleJobAlpha1() {
+      ::grpc::Service::MarkMethodGeneric(55);
+    }
+    ~WithGenericMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GetJobAlpha1() {
+      ::grpc::Service::MarkMethodGeneric(56);
+    }
+    ~WithGenericMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_DeleteJobAlpha1() {
+      ::grpc::Service::MarkMethodGeneric(57);
+    }
+    ~WithGenericMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3083,7 +7619,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_InvokeService : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_InvokeService() {
       ::grpc::Service::MarkMethodRaw(0);
@@ -3092,7 +7628,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeService(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response) override {
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3103,7 +7639,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetState() {
       ::grpc::Service::MarkMethodRaw(1);
@@ -3112,7 +7648,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response) override {
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3123,7 +7659,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetBulkState() {
       ::grpc::Service::MarkMethodRaw(2);
@@ -3132,7 +7668,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response) override {
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3143,7 +7679,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SaveState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SaveState() {
       ::grpc::Service::MarkMethodRaw(3);
@@ -3152,7 +7688,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SaveState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3163,7 +7699,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_QueryStateAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_QueryStateAlpha1() {
       ::grpc::Service::MarkMethodRaw(4);
@@ -3172,7 +7708,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response) override {
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3183,7 +7719,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_DeleteState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_DeleteState() {
       ::grpc::Service::MarkMethodRaw(5);
@@ -3192,7 +7728,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3203,7 +7739,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_DeleteBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_DeleteBulkState() {
       ::grpc::Service::MarkMethodRaw(6);
@@ -3212,7 +7748,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3223,7 +7759,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_ExecuteStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ExecuteStateTransaction() {
       ::grpc::Service::MarkMethodRaw(7);
@@ -3232,7 +7768,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3243,7 +7779,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_PublishEvent : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_PublishEvent() {
       ::grpc::Service::MarkMethodRaw(8);
@@ -3252,7 +7788,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PublishEvent(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3263,7 +7799,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_BulkPublishEventAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_BulkPublishEventAlpha1() {
       ::grpc::Service::MarkMethodRaw(9);
@@ -3272,7 +7808,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response) override {
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3281,169 +7817,169 @@ class Dapr final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_SubscribeTopicEventsAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_SubscribeTopicEventsAlpha1() {
+      ::grpc::Service::MarkMethodRaw(10);
+    }
+    ~WithRawMethod_SubscribeTopicEventsAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSubscribeTopicEventsAlpha1(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(10, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_InvokeBinding : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_InvokeBinding() {
-      ::grpc::Service::MarkMethodRaw(10);
+      ::grpc::Service::MarkMethodRaw(11);
     }
     ~WithRawMethod_InvokeBinding() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeBinding(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) override {
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestInvokeBinding(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_GetSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetSecret() {
-      ::grpc::Service::MarkMethodRaw(11);
+      ::grpc::Service::MarkMethodRaw(12);
     }
     ~WithRawMethod_GetSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response) override {
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetSecret(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_GetBulkSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetBulkSecret() {
-      ::grpc::Service::MarkMethodRaw(12);
+      ::grpc::Service::MarkMethodRaw(13);
     }
     ~WithRawMethod_GetBulkSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetBulkSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response) override {
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetBulkSecret(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_RegisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_RegisterActorTimer() {
-      ::grpc::Service::MarkMethodRaw(13);
+      ::grpc::Service::MarkMethodRaw(14);
     }
     ~WithRawMethod_RegisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRegisterActorTimer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_UnregisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UnregisterActorTimer() {
-      ::grpc::Service::MarkMethodRaw(14);
+      ::grpc::Service::MarkMethodRaw(15);
     }
     ~WithRawMethod_UnregisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUnregisterActorTimer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_RegisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_RegisterActorReminder() {
-      ::grpc::Service::MarkMethodRaw(15);
+      ::grpc::Service::MarkMethodRaw(16);
     }
     ~WithRawMethod_RegisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestRegisterActorReminder(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_UnregisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UnregisterActorReminder() {
-      ::grpc::Service::MarkMethodRaw(16);
+      ::grpc::Service::MarkMethodRaw(17);
     }
     ~WithRawMethod_UnregisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUnregisterActorReminder(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_RenameActorReminder : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_RenameActorReminder() {
-      ::grpc::Service::MarkMethodRaw(17);
-    }
-    ~WithRawMethod_RenameActorReminder() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RenameActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRenameActorReminder(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
   class WithRawMethod_GetActorState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetActorState() {
       ::grpc::Service::MarkMethodRaw(18);
@@ -3452,7 +7988,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActorState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) override {
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3463,7 +7999,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_ExecuteActorStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ExecuteActorStateTransaction() {
       ::grpc::Service::MarkMethodRaw(19);
@@ -3472,7 +8008,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3483,7 +8019,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_InvokeActor : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_InvokeActor() {
       ::grpc::Service::MarkMethodRaw(20);
@@ -3492,7 +8028,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status InvokeActor(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response) override {
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3503,7 +8039,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetConfigurationAlpha1() {
       ::grpc::Service::MarkMethodRaw(21);
@@ -3512,7 +8048,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3523,7 +8059,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetConfiguration() {
       ::grpc::Service::MarkMethodRaw(22);
@@ -3532,7 +8068,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3543,7 +8079,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodRaw(23);
@@ -3552,7 +8088,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3563,7 +8099,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubscribeConfiguration() {
       ::grpc::Service::MarkMethodRaw(24);
@@ -3572,7 +8108,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3583,7 +8119,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UnsubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodRaw(25);
@@ -3592,7 +8128,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3603,7 +8139,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_UnsubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UnsubscribeConfiguration() {
       ::grpc::Service::MarkMethodRaw(26);
@@ -3612,7 +8148,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3623,7 +8159,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_TryLockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_TryLockAlpha1() {
       ::grpc::Service::MarkMethodRaw(27);
@@ -3632,7 +8168,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response) override {
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3643,7 +8179,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_UnlockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UnlockAlpha1() {
       ::grpc::Service::MarkMethodRaw(28);
@@ -3652,7 +8188,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response) override {
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3663,7 +8199,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_EncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_EncryptAlpha1() {
       ::grpc::Service::MarkMethodRaw(29);
@@ -3672,7 +8208,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* stream)  override {
+    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3683,7 +8219,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_DecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_DecryptAlpha1() {
       ::grpc::Service::MarkMethodRaw(30);
@@ -3692,7 +8228,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* stream)  override {
+    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3703,7 +8239,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetMetadata() {
       ::grpc::Service::MarkMethodRaw(31);
@@ -3712,7 +8248,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3723,7 +8259,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SetMetadata() {
       ::grpc::Service::MarkMethodRaw(32);
@@ -3732,7 +8268,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3743,7 +8279,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleGetKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleGetKeyAlpha1() {
       ::grpc::Service::MarkMethodRaw(33);
@@ -3752,7 +8288,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response) override {
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3763,7 +8299,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleEncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleEncryptAlpha1() {
       ::grpc::Service::MarkMethodRaw(34);
@@ -3772,7 +8308,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response) override {
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3783,7 +8319,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleDecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleDecryptAlpha1() {
       ::grpc::Service::MarkMethodRaw(35);
@@ -3792,7 +8328,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response) override {
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3803,7 +8339,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleWrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleWrapKeyAlpha1() {
       ::grpc::Service::MarkMethodRaw(36);
@@ -3812,7 +8348,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response) override {
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3823,7 +8359,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleUnwrapKeyAlpha1() {
       ::grpc::Service::MarkMethodRaw(37);
@@ -3832,7 +8368,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response) override {
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3843,7 +8379,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleSignAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleSignAlpha1() {
       ::grpc::Service::MarkMethodRaw(38);
@@ -3852,7 +8388,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response) override {
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3863,7 +8399,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_SubtleVerifyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SubtleVerifyAlpha1() {
       ::grpc::Service::MarkMethodRaw(39);
@@ -3872,7 +8408,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response) override {
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3883,7 +8419,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_StartWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_StartWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(40);
@@ -3892,7 +8428,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) override {
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3903,7 +8439,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_GetWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(41);
@@ -3912,7 +8448,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) override {
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3923,7 +8459,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_PurgeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_PurgeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(42);
@@ -3932,7 +8468,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3943,7 +8479,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_TerminateWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_TerminateWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(43);
@@ -3952,7 +8488,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3963,7 +8499,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_PauseWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_PauseWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(44);
@@ -3972,7 +8508,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3983,7 +8519,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_ResumeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ResumeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(45);
@@ -3992,7 +8528,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4003,7 +8539,7 @@ class Dapr final {
   template <class BaseClass>
   class WithRawMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_RaiseEventWorkflowAlpha1() {
       ::grpc::Service::MarkMethodRaw(46);
@@ -4012,7 +8548,7 @@ class Dapr final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4021,39 +8557,2450 @@ class Dapr final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_StartWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(47);
+    }
+    ~WithRawMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestStartWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(47, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GetWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(48);
+    }
+    ~WithRawMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(48, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_PurgeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(49);
+    }
+    ~WithRawMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPurgeWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(49, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_TerminateWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(50);
+    }
+    ~WithRawMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTerminateWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(50, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_PauseWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(51);
+    }
+    ~WithRawMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPauseWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(51, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ResumeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(52);
+    }
+    ~WithRawMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestResumeWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(52, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_RaiseEventWorkflowBeta1() {
+      ::grpc::Service::MarkMethodRaw(53);
+    }
+    ~WithRawMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRaiseEventWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(53, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_Shutdown : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_Shutdown() {
-      ::grpc::Service::MarkMethodRaw(47);
+      ::grpc::Service::MarkMethodRaw(54);
     }
     ~WithRawMethod_Shutdown() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestShutdown(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(47, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(54, context, request, response, new_call_cq, notification_cq, tag);
     }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ScheduleJobAlpha1() {
+      ::grpc::Service::MarkMethodRaw(55);
+    }
+    ~WithRawMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestScheduleJobAlpha1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(55, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GetJobAlpha1() {
+      ::grpc::Service::MarkMethodRaw(56);
+    }
+    ~WithRawMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetJobAlpha1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(56, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_DeleteJobAlpha1() {
+      ::grpc::Service::MarkMethodRaw(57);
+    }
+    ~WithRawMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestDeleteJobAlpha1(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(57, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_InvokeService : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_InvokeService() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(0,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->InvokeService(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_InvokeService() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeService(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeService(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(1,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetBulkState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetBulkState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(2,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetBulkState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetBulkState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetBulkState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetBulkState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SaveState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SaveState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(3,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SaveState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SaveState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SaveState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SaveState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_QueryStateAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_QueryStateAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(4,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->QueryStateAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_QueryStateAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* QueryStateAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* QueryStateAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_DeleteState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_DeleteState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(5,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_DeleteState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_DeleteBulkState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_DeleteBulkState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(6,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteBulkState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_DeleteBulkState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteBulkState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteBulkState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_ExecuteStateTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_ExecuteStateTransaction() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(7,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ExecuteStateTransaction(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_ExecuteStateTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ExecuteStateTransaction(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ExecuteStateTransaction(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PublishEvent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PublishEvent() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PublishEvent(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PublishEvent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PublishEvent(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PublishEvent(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_BulkPublishEventAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_BulkPublishEventAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(9,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->BulkPublishEventAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_BulkPublishEventAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* BulkPublishEventAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* BulkPublishEventAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubscribeTopicEventsAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubscribeTopicEventsAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(10,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->SubscribeTopicEventsAlpha1(context); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubscribeTopicEventsAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeTopicEventsAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::SubscribeTopicEventsResponseAlpha1, ::dapr::proto::runtime::v1::SubscribeTopicEventsRequestAlpha1>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* SubscribeTopicEventsAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* SubscribeTopicEventsAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_InvokeBinding : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_InvokeBinding() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(11,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->InvokeBinding(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_InvokeBinding() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeBinding(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeBinding(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetSecret : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetSecret() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(12,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetSecret(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetSecret() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetSecret(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetSecret(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetBulkSecret : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetBulkSecret() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(13,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetBulkSecret(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetBulkSecret() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetBulkSecret(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetBulkSecret(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_RegisterActorTimer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_RegisterActorTimer() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(14,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RegisterActorTimer(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_RegisterActorTimer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RegisterActorTimer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RegisterActorTimer(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnregisterActorTimer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnregisterActorTimer() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(15,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UnregisterActorTimer(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnregisterActorTimer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnregisterActorTimer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnregisterActorTimer(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_RegisterActorReminder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_RegisterActorReminder() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(16,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RegisterActorReminder(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_RegisterActorReminder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RegisterActorReminder(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RegisterActorReminder(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnregisterActorReminder : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnregisterActorReminder() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(17,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UnregisterActorReminder(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnregisterActorReminder() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnregisterActorReminder(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnregisterActorReminder(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetActorState : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetActorState() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(18,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetActorState(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetActorState() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetActorState(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetActorState(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_ExecuteActorStateTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_ExecuteActorStateTransaction() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(19,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ExecuteActorStateTransaction(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_ExecuteActorStateTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ExecuteActorStateTransaction(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ExecuteActorStateTransaction(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_InvokeActor : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_InvokeActor() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(20,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->InvokeActor(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_InvokeActor() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* InvokeActor(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* InvokeActor(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(21,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetConfigurationAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(22,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetConfiguration(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubscribeConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubscribeConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(23,
+          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const::grpc::ByteBuffer* request) { return this->SubscribeConfigurationAlpha1(context, request); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubscribeConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* SubscribeConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    #else
+    virtual ::grpc::experimental::ServerWriteReactor< ::grpc::ByteBuffer>* SubscribeConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubscribeConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubscribeConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(24,
+          new ::grpc_impl::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const::grpc::ByteBuffer* request) { return this->SubscribeConfiguration(context, request); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubscribeConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* SubscribeConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    #else
+    virtual ::grpc::experimental::ServerWriteReactor< ::grpc::ByteBuffer>* SubscribeConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnsubscribeConfigurationAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(25,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UnsubscribeConfigurationAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnsubscribeConfigurationAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnsubscribeConfigurationAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnsubscribeConfigurationAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnsubscribeConfiguration : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnsubscribeConfiguration() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(26,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UnsubscribeConfiguration(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnsubscribeConfiguration() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnsubscribeConfiguration(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnsubscribeConfiguration(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_TryLockAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_TryLockAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(27,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->TryLockAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_TryLockAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TryLockAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TryLockAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnlockAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnlockAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(28,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UnlockAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnlockAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* UnlockAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* UnlockAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_EncryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_EncryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(29,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->EncryptAlpha1(context); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_EncryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status EncryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::EncryptResponse, ::dapr::proto::runtime::v1::EncryptRequest>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* EncryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* EncryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_DecryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_DecryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(30,
+          new ::grpc_impl::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context) { return this->DecryptAlpha1(context); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_DecryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DecryptAlpha1(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::dapr::proto::runtime::v1::DecryptResponse, ::dapr::proto::runtime::v1::DecryptRequest>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* DecryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/)
+    #else
+    virtual ::grpc::experimental::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* DecryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetMetadata : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetMetadata() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(31,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetMetadata(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetMetadata() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetMetadata(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetMetadata(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SetMetadata : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SetMetadata() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(32,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SetMetadata(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SetMetadata() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SetMetadata(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SetMetadata(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleGetKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleGetKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(33,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleGetKeyAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleGetKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleGetKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleGetKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleEncryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleEncryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(34,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleEncryptAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleEncryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleEncryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleEncryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleDecryptAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleDecryptAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(35,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleDecryptAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleDecryptAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleDecryptAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleDecryptAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleWrapKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleWrapKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(36,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleWrapKeyAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleWrapKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleWrapKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleWrapKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleUnwrapKeyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(37,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleUnwrapKeyAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleUnwrapKeyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleUnwrapKeyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleUnwrapKeyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleSignAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleSignAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(38,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleSignAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleSignAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleSignAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleSignAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SubtleVerifyAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SubtleVerifyAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(39,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SubtleVerifyAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_SubtleVerifyAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* SubtleVerifyAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* SubtleVerifyAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_StartWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_StartWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(40,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->StartWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_StartWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* StartWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* StartWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(41,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PurgeWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PurgeWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(42,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PurgeWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PurgeWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PurgeWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PurgeWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_TerminateWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_TerminateWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(43,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->TerminateWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_TerminateWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TerminateWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TerminateWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PauseWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PauseWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(44,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PauseWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PauseWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PauseWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PauseWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_ResumeWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_ResumeWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(45,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ResumeWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_ResumeWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ResumeWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ResumeWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_RaiseEventWorkflowAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(46,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RaiseEventWorkflowAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_RaiseEventWorkflowAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RaiseEventWorkflowAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RaiseEventWorkflowAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_StartWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(47,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->StartWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* StartWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* StartWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(48,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PurgeWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(49,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PurgeWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PurgeWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PurgeWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_TerminateWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(50,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->TerminateWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* TerminateWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* TerminateWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PauseWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(51,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PauseWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PauseWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PauseWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_ResumeWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(52,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ResumeWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ResumeWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ResumeWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_RaiseEventWorkflowBeta1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(53,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RaiseEventWorkflowBeta1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* RaiseEventWorkflowBeta1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* RaiseEventWorkflowBeta1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_Shutdown : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_Shutdown() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(54,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Shutdown(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_Shutdown() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Shutdown(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Shutdown(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_ScheduleJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(55,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ScheduleJobAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* ScheduleJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* ScheduleJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(56,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetJobAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_DeleteJobAlpha1() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(57,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteJobAlpha1(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* DeleteJobAlpha1(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* DeleteJobAlpha1(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_InvokeService : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_InvokeService() {
       ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>(std::bind(&WithStreamedUnaryMethod_InvokeService<BaseClass>::StreamedInvokeService, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::InvokeServiceRequest, ::dapr::proto::common::v1::InvokeResponse>* streamer) {
+                       return this->StreamedInvokeService(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_InvokeService() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status InvokeService(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeServiceRequest* request, ::dapr::proto::common::v1::InvokeResponse* response) override {
+    ::grpc::Status InvokeService(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeServiceRequest* /*request*/, ::dapr::proto::common::v1::InvokeResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4063,17 +11010,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetState() {
       ::grpc::Service::MarkMethodStreamed(1,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>(std::bind(&WithStreamedUnaryMethod_GetState<BaseClass>::StreamedGetState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetStateRequest, ::dapr::proto::runtime::v1::GetStateResponse>* streamer) {
+                       return this->StreamedGetState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetStateRequest* request, ::dapr::proto::runtime::v1::GetStateResponse* response) override {
+    ::grpc::Status GetState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4083,17 +11037,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetBulkState() {
       ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>(std::bind(&WithStreamedUnaryMethod_GetBulkState<BaseClass>::StreamedGetBulkState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetBulkStateRequest, ::dapr::proto::runtime::v1::GetBulkStateResponse>* streamer) {
+                       return this->StreamedGetBulkState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetBulkState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkStateRequest* request, ::dapr::proto::runtime::v1::GetBulkStateResponse* response) override {
+    ::grpc::Status GetBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4103,17 +11064,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SaveState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SaveState() {
       ::grpc::Service::MarkMethodStreamed(3,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_SaveState<BaseClass>::StreamedSaveState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SaveStateRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedSaveState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SaveState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SaveState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SaveStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SaveState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SaveStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4123,17 +11091,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_QueryStateAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_QueryStateAlpha1() {
       ::grpc::Service::MarkMethodStreamed(4,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>(std::bind(&WithStreamedUnaryMethod_QueryStateAlpha1<BaseClass>::StreamedQueryStateAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::QueryStateRequest, ::dapr::proto::runtime::v1::QueryStateResponse>* streamer) {
+                       return this->StreamedQueryStateAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_QueryStateAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::QueryStateRequest* request, ::dapr::proto::runtime::v1::QueryStateResponse* response) override {
+    ::grpc::Status QueryStateAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::QueryStateRequest* /*request*/, ::dapr::proto::runtime::v1::QueryStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4143,17 +11118,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_DeleteState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_DeleteState() {
       ::grpc::Service::MarkMethodStreamed(5,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_DeleteState<BaseClass>::StreamedDeleteState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::DeleteStateRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedDeleteState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_DeleteState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status DeleteState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4163,17 +11145,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_DeleteBulkState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_DeleteBulkState() {
       ::grpc::Service::MarkMethodStreamed(6,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_DeleteBulkState<BaseClass>::StreamedDeleteBulkState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::DeleteBulkStateRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedDeleteBulkState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_DeleteBulkState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status DeleteBulkState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status DeleteBulkState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteBulkStateRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4183,17 +11172,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_ExecuteStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ExecuteStateTransaction() {
       ::grpc::Service::MarkMethodStreamed(7,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_ExecuteStateTransaction<BaseClass>::StreamedExecuteStateTransaction, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedExecuteStateTransaction(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_ExecuteStateTransaction() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4203,17 +11199,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_PublishEvent : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_PublishEvent() {
       ::grpc::Service::MarkMethodStreamed(8,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_PublishEvent<BaseClass>::StreamedPublishEvent, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::PublishEventRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedPublishEvent(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_PublishEvent() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PublishEvent(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PublishEventRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PublishEvent(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PublishEventRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4223,17 +11226,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_BulkPublishEventAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_BulkPublishEventAlpha1() {
       ::grpc::Service::MarkMethodStreamed(9,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>(std::bind(&WithStreamedUnaryMethod_BulkPublishEventAlpha1<BaseClass>::StreamedBulkPublishEventAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::BulkPublishRequest, ::dapr::proto::runtime::v1::BulkPublishResponse>* streamer) {
+                       return this->StreamedBulkPublishEventAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_BulkPublishEventAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::BulkPublishRequest* request, ::dapr::proto::runtime::v1::BulkPublishResponse* response) override {
+    ::grpc::Status BulkPublishEventAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::BulkPublishRequest* /*request*/, ::dapr::proto::runtime::v1::BulkPublishResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4243,17 +11253,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_InvokeBinding : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_InvokeBinding() {
-      ::grpc::Service::MarkMethodStreamed(10,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>(std::bind(&WithStreamedUnaryMethod_InvokeBinding<BaseClass>::StreamedInvokeBinding, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(11,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::InvokeBindingRequest, ::dapr::proto::runtime::v1::InvokeBindingResponse>* streamer) {
+                       return this->StreamedInvokeBinding(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_InvokeBinding() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status InvokeBinding(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeBindingRequest* request, ::dapr::proto::runtime::v1::InvokeBindingResponse* response) override {
+    ::grpc::Status InvokeBinding(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeBindingRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeBindingResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4263,17 +11280,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetSecret() {
-      ::grpc::Service::MarkMethodStreamed(11,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>(std::bind(&WithStreamedUnaryMethod_GetSecret<BaseClass>::StreamedGetSecret, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(12,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetSecretRequest, ::dapr::proto::runtime::v1::GetSecretResponse>* streamer) {
+                       return this->StreamedGetSecret(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetSecretRequest* request, ::dapr::proto::runtime::v1::GetSecretResponse* response) override {
+    ::grpc::Status GetSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4283,17 +11307,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetBulkSecret : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetBulkSecret() {
-      ::grpc::Service::MarkMethodStreamed(12,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>(std::bind(&WithStreamedUnaryMethod_GetBulkSecret<BaseClass>::StreamedGetBulkSecret, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(13,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetBulkSecretRequest, ::dapr::proto::runtime::v1::GetBulkSecretResponse>* streamer) {
+                       return this->StreamedGetBulkSecret(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetBulkSecret() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetBulkSecret(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* request, ::dapr::proto::runtime::v1::GetBulkSecretResponse* response) override {
+    ::grpc::Status GetBulkSecret(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetBulkSecretRequest* /*request*/, ::dapr::proto::runtime::v1::GetBulkSecretResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4303,17 +11334,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_RegisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_RegisterActorTimer() {
-      ::grpc::Service::MarkMethodStreamed(13,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_RegisterActorTimer<BaseClass>::StreamedRegisterActorTimer, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(14,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::RegisterActorTimerRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedRegisterActorTimer(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_RegisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4323,17 +11361,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_UnregisterActorTimer : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UnregisterActorTimer() {
-      ::grpc::Service::MarkMethodStreamed(14,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_UnregisterActorTimer<BaseClass>::StreamedUnregisterActorTimer, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(15,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::UnregisterActorTimerRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedUnregisterActorTimer(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_UnregisterActorTimer() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorTimer(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorTimerRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4343,17 +11388,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_RegisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_RegisterActorReminder() {
-      ::grpc::Service::MarkMethodStreamed(15,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_RegisterActorReminder<BaseClass>::StreamedRegisterActorReminder, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(16,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::RegisterActorReminderRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedRegisterActorReminder(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_RegisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RegisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RegisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4363,17 +11415,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_UnregisterActorReminder : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UnregisterActorReminder() {
-      ::grpc::Service::MarkMethodStreamed(16,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_UnregisterActorReminder<BaseClass>::StreamedUnregisterActorReminder, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(17,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::UnregisterActorReminderRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedUnregisterActorReminder(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_UnregisterActorReminder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status UnregisterActorReminder(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnregisterActorReminderRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4381,39 +11440,26 @@ class Dapr final {
     virtual ::grpc::Status StreamedUnregisterActorReminder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::UnregisterActorReminderRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_RenameActorReminder : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithStreamedUnaryMethod_RenameActorReminder() {
-      ::grpc::Service::MarkMethodStreamed(17,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::RenameActorReminderRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_RenameActorReminder<BaseClass>::StreamedRenameActorReminder, this, std::placeholders::_1, std::placeholders::_2)));
-    }
-    ~WithStreamedUnaryMethod_RenameActorReminder() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status RenameActorReminder(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RenameActorReminderRequest* request, ::google::protobuf::Empty* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRenameActorReminder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::RenameActorReminderRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
   class WithStreamedUnaryMethod_GetActorState : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetActorState() {
       ::grpc::Service::MarkMethodStreamed(18,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>(std::bind(&WithStreamedUnaryMethod_GetActorState<BaseClass>::StreamedGetActorState, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetActorStateRequest, ::dapr::proto::runtime::v1::GetActorStateResponse>* streamer) {
+                       return this->StreamedGetActorState(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetActorState() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetActorState(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetActorStateRequest* request, ::dapr::proto::runtime::v1::GetActorStateResponse* response) override {
+    ::grpc::Status GetActorState(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetActorStateRequest* /*request*/, ::dapr::proto::runtime::v1::GetActorStateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4423,17 +11469,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_ExecuteActorStateTransaction : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ExecuteActorStateTransaction() {
       ::grpc::Service::MarkMethodStreamed(19,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_ExecuteActorStateTransaction<BaseClass>::StreamedExecuteActorStateTransaction, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedExecuteActorStateTransaction(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_ExecuteActorStateTransaction() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ExecuteActorStateTransaction(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ExecuteActorStateTransactionRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4443,17 +11496,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_InvokeActor : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_InvokeActor() {
       ::grpc::Service::MarkMethodStreamed(20,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>(std::bind(&WithStreamedUnaryMethod_InvokeActor<BaseClass>::StreamedInvokeActor, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::InvokeActorRequest, ::dapr::proto::runtime::v1::InvokeActorResponse>* streamer) {
+                       return this->StreamedInvokeActor(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_InvokeActor() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status InvokeActor(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::InvokeActorRequest* request, ::dapr::proto::runtime::v1::InvokeActorResponse* response) override {
+    ::grpc::Status InvokeActor(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::InvokeActorRequest* /*request*/, ::dapr::proto::runtime::v1::InvokeActorResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4463,17 +11523,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetConfigurationAlpha1() {
       ::grpc::Service::MarkMethodStreamed(21,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(std::bind(&WithStreamedUnaryMethod_GetConfigurationAlpha1<BaseClass>::StreamedGetConfigurationAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>* streamer) {
+                       return this->StreamedGetConfigurationAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetConfigurationAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4483,17 +11550,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetConfiguration() {
       ::grpc::Service::MarkMethodStreamed(22,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(std::bind(&WithStreamedUnaryMethod_GetConfiguration<BaseClass>::StreamedGetConfiguration, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetConfigurationRequest, ::dapr::proto::runtime::v1::GetConfigurationResponse>* streamer) {
+                       return this->StreamedGetConfiguration(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetConfiguration() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetConfigurationRequest* request, ::dapr::proto::runtime::v1::GetConfigurationResponse* response) override {
+    ::grpc::Status GetConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::GetConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4503,17 +11577,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodStreamed(25,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(std::bind(&WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1<BaseClass>::StreamedUnsubscribeConfigurationAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>* streamer) {
+                       return this->StreamedUnsubscribeConfigurationAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4523,17 +11604,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_UnsubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UnsubscribeConfiguration() {
       ::grpc::Service::MarkMethodStreamed(26,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(std::bind(&WithStreamedUnaryMethod_UnsubscribeConfiguration<BaseClass>::StreamedUnsubscribeConfiguration, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse>* streamer) {
+                       return this->StreamedUnsubscribeConfiguration(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_UnsubscribeConfiguration() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* request, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* response) override {
+    ::grpc::Status UnsubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnsubscribeConfigurationRequest* /*request*/, ::dapr::proto::runtime::v1::UnsubscribeConfigurationResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4543,17 +11631,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_TryLockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_TryLockAlpha1() {
       ::grpc::Service::MarkMethodStreamed(27,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>(std::bind(&WithStreamedUnaryMethod_TryLockAlpha1<BaseClass>::StreamedTryLockAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::TryLockRequest, ::dapr::proto::runtime::v1::TryLockResponse>* streamer) {
+                       return this->StreamedTryLockAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_TryLockAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TryLockRequest* request, ::dapr::proto::runtime::v1::TryLockResponse* response) override {
+    ::grpc::Status TryLockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TryLockRequest* /*request*/, ::dapr::proto::runtime::v1::TryLockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4563,17 +11658,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_UnlockAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UnlockAlpha1() {
       ::grpc::Service::MarkMethodStreamed(28,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>(std::bind(&WithStreamedUnaryMethod_UnlockAlpha1<BaseClass>::StreamedUnlockAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::UnlockRequest, ::dapr::proto::runtime::v1::UnlockResponse>* streamer) {
+                       return this->StreamedUnlockAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_UnlockAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::UnlockRequest* request, ::dapr::proto::runtime::v1::UnlockResponse* response) override {
+    ::grpc::Status UnlockAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::UnlockRequest* /*request*/, ::dapr::proto::runtime::v1::UnlockResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4583,37 +11685,51 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetMetadata() {
       ::grpc::Service::MarkMethodStreamed(31,
-        new ::grpc::internal::StreamedUnaryHandler< ::google::protobuf::Empty, ::dapr::proto::runtime::v1::GetMetadataResponse>(std::bind(&WithStreamedUnaryMethod_GetMetadata<BaseClass>::StreamedGetMetadata, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetMetadataRequest, ::dapr::proto::runtime::v1::GetMetadataResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetMetadataRequest, ::dapr::proto::runtime::v1::GetMetadataResponse>* streamer) {
+                       return this->StreamedGetMetadata(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::dapr::proto::runtime::v1::GetMetadataResponse* response) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetMetadataRequest* /*request*/, ::dapr::proto::runtime::v1::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::google::protobuf::Empty,::dapr::proto::runtime::v1::GetMetadataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::GetMetadataRequest,::dapr::proto::runtime::v1::GetMetadataResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_SetMetadata : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SetMetadata() {
       ::grpc::Service::MarkMethodStreamed(32,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_SetMetadata<BaseClass>::StreamedSetMetadata, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SetMetadataRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedSetMetadata(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SetMetadataRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SetMetadataRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4623,17 +11739,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleGetKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleGetKeyAlpha1() {
       ::grpc::Service::MarkMethodStreamed(33,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>(std::bind(&WithStreamedUnaryMethod_SubtleGetKeyAlpha1<BaseClass>::StreamedSubtleGetKeyAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleGetKeyRequest, ::dapr::proto::runtime::v1::SubtleGetKeyResponse>* streamer) {
+                       return this->StreamedSubtleGetKeyAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleGetKeyAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* request, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* response) override {
+    ::grpc::Status SubtleGetKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleGetKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleGetKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4643,17 +11766,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleEncryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleEncryptAlpha1() {
       ::grpc::Service::MarkMethodStreamed(34,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>(std::bind(&WithStreamedUnaryMethod_SubtleEncryptAlpha1<BaseClass>::StreamedSubtleEncryptAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleEncryptRequest, ::dapr::proto::runtime::v1::SubtleEncryptResponse>* streamer) {
+                       return this->StreamedSubtleEncryptAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleEncryptAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* request, ::dapr::proto::runtime::v1::SubtleEncryptResponse* response) override {
+    ::grpc::Status SubtleEncryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleEncryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleEncryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4663,17 +11793,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleDecryptAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleDecryptAlpha1() {
       ::grpc::Service::MarkMethodStreamed(35,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>(std::bind(&WithStreamedUnaryMethod_SubtleDecryptAlpha1<BaseClass>::StreamedSubtleDecryptAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleDecryptRequest, ::dapr::proto::runtime::v1::SubtleDecryptResponse>* streamer) {
+                       return this->StreamedSubtleDecryptAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleDecryptAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* request, ::dapr::proto::runtime::v1::SubtleDecryptResponse* response) override {
+    ::grpc::Status SubtleDecryptAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleDecryptRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleDecryptResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4683,17 +11820,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleWrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleWrapKeyAlpha1() {
       ::grpc::Service::MarkMethodStreamed(36,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>(std::bind(&WithStreamedUnaryMethod_SubtleWrapKeyAlpha1<BaseClass>::StreamedSubtleWrapKeyAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleWrapKeyRequest, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse>* streamer) {
+                       return this->StreamedSubtleWrapKeyAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleWrapKeyAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* response) override {
+    ::grpc::Status SubtleWrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleWrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleWrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4703,17 +11847,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1() {
       ::grpc::Service::MarkMethodStreamed(37,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>(std::bind(&WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1<BaseClass>::StreamedSubtleUnwrapKeyAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse>* streamer) {
+                       return this->StreamedSubtleUnwrapKeyAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* request, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* response) override {
+    ::grpc::Status SubtleUnwrapKeyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleUnwrapKeyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleUnwrapKeyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4723,17 +11874,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleSignAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleSignAlpha1() {
       ::grpc::Service::MarkMethodStreamed(38,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>(std::bind(&WithStreamedUnaryMethod_SubtleSignAlpha1<BaseClass>::StreamedSubtleSignAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleSignRequest, ::dapr::proto::runtime::v1::SubtleSignResponse>* streamer) {
+                       return this->StreamedSubtleSignAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleSignAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleSignRequest* request, ::dapr::proto::runtime::v1::SubtleSignResponse* response) override {
+    ::grpc::Status SubtleSignAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleSignRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleSignResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4743,17 +11901,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_SubtleVerifyAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SubtleVerifyAlpha1() {
       ::grpc::Service::MarkMethodStreamed(39,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>(std::bind(&WithStreamedUnaryMethod_SubtleVerifyAlpha1<BaseClass>::StreamedSubtleVerifyAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::SubtleVerifyRequest, ::dapr::proto::runtime::v1::SubtleVerifyResponse>* streamer) {
+                       return this->StreamedSubtleVerifyAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_SubtleVerifyAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* request, ::dapr::proto::runtime::v1::SubtleVerifyResponse* response) override {
+    ::grpc::Status SubtleVerifyAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubtleVerifyRequest* /*request*/, ::dapr::proto::runtime::v1::SubtleVerifyResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4763,17 +11928,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_StartWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_StartWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(40,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>(std::bind(&WithStreamedUnaryMethod_StartWorkflowAlpha1<BaseClass>::StreamedStartWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>* streamer) {
+                       return this->StreamedStartWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_StartWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::StartWorkflowRequest* request, ::dapr::proto::runtime::v1::StartWorkflowResponse* response) override {
+    ::grpc::Status StartWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4783,17 +11955,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(41,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>(std::bind(&WithStreamedUnaryMethod_GetWorkflowAlpha1<BaseClass>::StreamedGetWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>* streamer) {
+                       return this->StreamedGetWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_GetWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::GetWorkflowRequest* request, ::dapr::proto::runtime::v1::GetWorkflowResponse* response) override {
+    ::grpc::Status GetWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4803,17 +11982,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_PurgeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_PurgeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(42,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_PurgeWorkflowAlpha1<BaseClass>::StreamedPurgeWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedPurgeWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_PurgeWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PurgeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4823,17 +12009,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_TerminateWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_TerminateWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(43,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_TerminateWorkflowAlpha1<BaseClass>::StreamedTerminateWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedTerminateWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_TerminateWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status TerminateWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4843,17 +12036,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_PauseWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_PauseWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(44,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_PauseWorkflowAlpha1<BaseClass>::StreamedPauseWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedPauseWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_PauseWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status PauseWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4863,17 +12063,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_ResumeWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ResumeWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(45,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_ResumeWorkflowAlpha1<BaseClass>::StreamedResumeWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedResumeWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_ResumeWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status ResumeWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4883,17 +12090,24 @@ class Dapr final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1() {
       ::grpc::Service::MarkMethodStreamed(46,
-        new ::grpc::internal::StreamedUnaryHandler< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1<BaseClass>::StreamedRaiseEventWorkflowAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedRaiseEventWorkflowAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status RaiseEventWorkflowAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4901,40 +12115,324 @@ class Dapr final {
     virtual ::grpc::Status StreamedRaiseEventWorkflowAlpha1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_StartWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_StartWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(47,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::StartWorkflowRequest, ::dapr::proto::runtime::v1::StartWorkflowResponse>* streamer) {
+                       return this->StreamedStartWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_StartWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status StartWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::StartWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::StartWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedStartWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::StartWorkflowRequest,::dapr::proto::runtime::v1::StartWorkflowResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GetWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GetWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(48,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetWorkflowRequest, ::dapr::proto::runtime::v1::GetWorkflowResponse>* streamer) {
+                       return this->StreamedGetWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GetWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GetWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetWorkflowRequest* /*request*/, ::dapr::proto::runtime::v1::GetWorkflowResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::GetWorkflowRequest,::dapr::proto::runtime::v1::GetWorkflowResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_PurgeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_PurgeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(49,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::PurgeWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedPurgeWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_PurgeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status PurgeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PurgeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedPurgeWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::PurgeWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_TerminateWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_TerminateWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(50,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::TerminateWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedTerminateWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_TerminateWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status TerminateWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::TerminateWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedTerminateWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::TerminateWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_PauseWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_PauseWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(51,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::PauseWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedPauseWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_PauseWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status PauseWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::PauseWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedPauseWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::PauseWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ResumeWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ResumeWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(52,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ResumeWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedResumeWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ResumeWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ResumeWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ResumeWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedResumeWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::ResumeWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_RaiseEventWorkflowBeta1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_RaiseEventWorkflowBeta1() {
+      ::grpc::Service::MarkMethodStreamed(53,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedRaiseEventWorkflowBeta1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_RaiseEventWorkflowBeta1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status RaiseEventWorkflowBeta1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedRaiseEventWorkflowBeta1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::RaiseEventWorkflowRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_Shutdown : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_Shutdown() {
-      ::grpc::Service::MarkMethodStreamed(47,
-        new ::grpc::internal::StreamedUnaryHandler< ::google::protobuf::Empty, ::google::protobuf::Empty>(std::bind(&WithStreamedUnaryMethod_Shutdown<BaseClass>::StreamedShutdown, this, std::placeholders::_1, std::placeholders::_2)));
+      ::grpc::Service::MarkMethodStreamed(54,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ShutdownRequest, ::google::protobuf::Empty>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ShutdownRequest, ::google::protobuf::Empty>* streamer) {
+                       return this->StreamedShutdown(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_Shutdown() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Shutdown(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::google::protobuf::Empty* response) override {
+    ::grpc::Status Shutdown(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ShutdownRequest* /*request*/, ::google::protobuf::Empty* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedShutdown(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::google::protobuf::Empty,::google::protobuf::Empty>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedShutdown(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::ShutdownRequest,::google::protobuf::Empty>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_InvokeService<WithStreamedUnaryMethod_GetState<WithStreamedUnaryMethod_GetBulkState<WithStreamedUnaryMethod_SaveState<WithStreamedUnaryMethod_QueryStateAlpha1<WithStreamedUnaryMethod_DeleteState<WithStreamedUnaryMethod_DeleteBulkState<WithStreamedUnaryMethod_ExecuteStateTransaction<WithStreamedUnaryMethod_PublishEvent<WithStreamedUnaryMethod_BulkPublishEventAlpha1<WithStreamedUnaryMethod_InvokeBinding<WithStreamedUnaryMethod_GetSecret<WithStreamedUnaryMethod_GetBulkSecret<WithStreamedUnaryMethod_RegisterActorTimer<WithStreamedUnaryMethod_UnregisterActorTimer<WithStreamedUnaryMethod_RegisterActorReminder<WithStreamedUnaryMethod_UnregisterActorReminder<WithStreamedUnaryMethod_RenameActorReminder<WithStreamedUnaryMethod_GetActorState<WithStreamedUnaryMethod_ExecuteActorStateTransaction<WithStreamedUnaryMethod_InvokeActor<WithStreamedUnaryMethod_GetConfigurationAlpha1<WithStreamedUnaryMethod_GetConfiguration<WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1<WithStreamedUnaryMethod_UnsubscribeConfiguration<WithStreamedUnaryMethod_TryLockAlpha1<WithStreamedUnaryMethod_UnlockAlpha1<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_SubtleGetKeyAlpha1<WithStreamedUnaryMethod_SubtleEncryptAlpha1<WithStreamedUnaryMethod_SubtleDecryptAlpha1<WithStreamedUnaryMethod_SubtleWrapKeyAlpha1<WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1<WithStreamedUnaryMethod_SubtleSignAlpha1<WithStreamedUnaryMethod_SubtleVerifyAlpha1<WithStreamedUnaryMethod_StartWorkflowAlpha1<WithStreamedUnaryMethod_GetWorkflowAlpha1<WithStreamedUnaryMethod_PurgeWorkflowAlpha1<WithStreamedUnaryMethod_TerminateWorkflowAlpha1<WithStreamedUnaryMethod_PauseWorkflowAlpha1<WithStreamedUnaryMethod_ResumeWorkflowAlpha1<WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1<WithStreamedUnaryMethod_Shutdown<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ScheduleJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ScheduleJobAlpha1() {
+      ::grpc::Service::MarkMethodStreamed(55,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::ScheduleJobRequest, ::dapr::proto::runtime::v1::ScheduleJobResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::ScheduleJobRequest, ::dapr::proto::runtime::v1::ScheduleJobResponse>* streamer) {
+                       return this->StreamedScheduleJobAlpha1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ScheduleJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ScheduleJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::ScheduleJobRequest* /*request*/, ::dapr::proto::runtime::v1::ScheduleJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedScheduleJobAlpha1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::ScheduleJobRequest,::dapr::proto::runtime::v1::ScheduleJobResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GetJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GetJobAlpha1() {
+      ::grpc::Service::MarkMethodStreamed(56,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::GetJobRequest, ::dapr::proto::runtime::v1::GetJobResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::GetJobRequest, ::dapr::proto::runtime::v1::GetJobResponse>* streamer) {
+                       return this->StreamedGetJobAlpha1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GetJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GetJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::GetJobRequest* /*request*/, ::dapr::proto::runtime::v1::GetJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetJobAlpha1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::GetJobRequest,::dapr::proto::runtime::v1::GetJobResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_DeleteJobAlpha1 : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_DeleteJobAlpha1() {
+      ::grpc::Service::MarkMethodStreamed(57,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::dapr::proto::runtime::v1::DeleteJobRequest, ::dapr::proto::runtime::v1::DeleteJobResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerUnaryStreamer<
+                     ::dapr::proto::runtime::v1::DeleteJobRequest, ::dapr::proto::runtime::v1::DeleteJobResponse>* streamer) {
+                       return this->StreamedDeleteJobAlpha1(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_DeleteJobAlpha1() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status DeleteJobAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::DeleteJobRequest* /*request*/, ::dapr::proto::runtime::v1::DeleteJobResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedDeleteJobAlpha1(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::dapr::proto::runtime::v1::DeleteJobRequest,::dapr::proto::runtime::v1::DeleteJobResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_InvokeService<WithStreamedUnaryMethod_GetState<WithStreamedUnaryMethod_GetBulkState<WithStreamedUnaryMethod_SaveState<WithStreamedUnaryMethod_QueryStateAlpha1<WithStreamedUnaryMethod_DeleteState<WithStreamedUnaryMethod_DeleteBulkState<WithStreamedUnaryMethod_ExecuteStateTransaction<WithStreamedUnaryMethod_PublishEvent<WithStreamedUnaryMethod_BulkPublishEventAlpha1<WithStreamedUnaryMethod_InvokeBinding<WithStreamedUnaryMethod_GetSecret<WithStreamedUnaryMethod_GetBulkSecret<WithStreamedUnaryMethod_RegisterActorTimer<WithStreamedUnaryMethod_UnregisterActorTimer<WithStreamedUnaryMethod_RegisterActorReminder<WithStreamedUnaryMethod_UnregisterActorReminder<WithStreamedUnaryMethod_GetActorState<WithStreamedUnaryMethod_ExecuteActorStateTransaction<WithStreamedUnaryMethod_InvokeActor<WithStreamedUnaryMethod_GetConfigurationAlpha1<WithStreamedUnaryMethod_GetConfiguration<WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1<WithStreamedUnaryMethod_UnsubscribeConfiguration<WithStreamedUnaryMethod_TryLockAlpha1<WithStreamedUnaryMethod_UnlockAlpha1<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_SubtleGetKeyAlpha1<WithStreamedUnaryMethod_SubtleEncryptAlpha1<WithStreamedUnaryMethod_SubtleDecryptAlpha1<WithStreamedUnaryMethod_SubtleWrapKeyAlpha1<WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1<WithStreamedUnaryMethod_SubtleSignAlpha1<WithStreamedUnaryMethod_SubtleVerifyAlpha1<WithStreamedUnaryMethod_StartWorkflowAlpha1<WithStreamedUnaryMethod_GetWorkflowAlpha1<WithStreamedUnaryMethod_PurgeWorkflowAlpha1<WithStreamedUnaryMethod_TerminateWorkflowAlpha1<WithStreamedUnaryMethod_PauseWorkflowAlpha1<WithStreamedUnaryMethod_ResumeWorkflowAlpha1<WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1<WithStreamedUnaryMethod_StartWorkflowBeta1<WithStreamedUnaryMethod_GetWorkflowBeta1<WithStreamedUnaryMethod_PurgeWorkflowBeta1<WithStreamedUnaryMethod_TerminateWorkflowBeta1<WithStreamedUnaryMethod_PauseWorkflowBeta1<WithStreamedUnaryMethod_ResumeWorkflowBeta1<WithStreamedUnaryMethod_RaiseEventWorkflowBeta1<WithStreamedUnaryMethod_Shutdown<WithStreamedUnaryMethod_ScheduleJobAlpha1<WithStreamedUnaryMethod_GetJobAlpha1<WithStreamedUnaryMethod_DeleteJobAlpha1<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_SubscribeConfigurationAlpha1 : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithSplitStreamingMethod_SubscribeConfigurationAlpha1() {
       ::grpc::Service::MarkMethodStreamed(23,
-        new ::grpc::internal::SplitServerStreamingHandler< ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(std::bind(&WithSplitStreamingMethod_SubscribeConfigurationAlpha1<BaseClass>::StreamedSubscribeConfigurationAlpha1, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerSplitStreamer<
+                     ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* streamer) {
+                       return this->StreamedSubscribeConfigurationAlpha1(context,
+                         streamer);
+                  }));
     }
     ~WithSplitStreamingMethod_SubscribeConfigurationAlpha1() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfigurationAlpha1(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4944,17 +12442,24 @@ class Dapr final {
   template <class BaseClass>
   class WithSplitStreamingMethod_SubscribeConfiguration : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithSplitStreamingMethod_SubscribeConfiguration() {
       ::grpc::Service::MarkMethodStreamed(24,
-        new ::grpc::internal::SplitServerStreamingHandler< ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(std::bind(&WithSplitStreamingMethod_SubscribeConfiguration<BaseClass>::StreamedSubscribeConfiguration, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>(
+            [this](::grpc_impl::ServerContext* context,
+                   ::grpc_impl::ServerSplitStreamer<
+                     ::dapr::proto::runtime::v1::SubscribeConfigurationRequest, ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* streamer) {
+                       return this->StreamedSubscribeConfiguration(context,
+                         streamer);
+                  }));
     }
     ~WithSplitStreamingMethod_SubscribeConfiguration() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* context, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* request, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* writer) override {
+    ::grpc::Status SubscribeConfiguration(::grpc::ServerContext* /*context*/, const ::dapr::proto::runtime::v1::SubscribeConfigurationRequest* /*request*/, ::grpc::ServerWriter< ::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4962,7 +12467,7 @@ class Dapr final {
     virtual ::grpc::Status StreamedSubscribeConfiguration(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::dapr::proto::runtime::v1::SubscribeConfigurationRequest,::dapr::proto::runtime::v1::SubscribeConfigurationResponse>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_SubscribeConfigurationAlpha1<WithSplitStreamingMethod_SubscribeConfiguration<Service > > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_InvokeService<WithStreamedUnaryMethod_GetState<WithStreamedUnaryMethod_GetBulkState<WithStreamedUnaryMethod_SaveState<WithStreamedUnaryMethod_QueryStateAlpha1<WithStreamedUnaryMethod_DeleteState<WithStreamedUnaryMethod_DeleteBulkState<WithStreamedUnaryMethod_ExecuteStateTransaction<WithStreamedUnaryMethod_PublishEvent<WithStreamedUnaryMethod_BulkPublishEventAlpha1<WithStreamedUnaryMethod_InvokeBinding<WithStreamedUnaryMethod_GetSecret<WithStreamedUnaryMethod_GetBulkSecret<WithStreamedUnaryMethod_RegisterActorTimer<WithStreamedUnaryMethod_UnregisterActorTimer<WithStreamedUnaryMethod_RegisterActorReminder<WithStreamedUnaryMethod_UnregisterActorReminder<WithStreamedUnaryMethod_RenameActorReminder<WithStreamedUnaryMethod_GetActorState<WithStreamedUnaryMethod_ExecuteActorStateTransaction<WithStreamedUnaryMethod_InvokeActor<WithStreamedUnaryMethod_GetConfigurationAlpha1<WithStreamedUnaryMethod_GetConfiguration<WithSplitStreamingMethod_SubscribeConfigurationAlpha1<WithSplitStreamingMethod_SubscribeConfiguration<WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1<WithStreamedUnaryMethod_UnsubscribeConfiguration<WithStreamedUnaryMethod_TryLockAlpha1<WithStreamedUnaryMethod_UnlockAlpha1<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_SubtleGetKeyAlpha1<WithStreamedUnaryMethod_SubtleEncryptAlpha1<WithStreamedUnaryMethod_SubtleDecryptAlpha1<WithStreamedUnaryMethod_SubtleWrapKeyAlpha1<WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1<WithStreamedUnaryMethod_SubtleSignAlpha1<WithStreamedUnaryMethod_SubtleVerifyAlpha1<WithStreamedUnaryMethod_StartWorkflowAlpha1<WithStreamedUnaryMethod_GetWorkflowAlpha1<WithStreamedUnaryMethod_PurgeWorkflowAlpha1<WithStreamedUnaryMethod_TerminateWorkflowAlpha1<WithStreamedUnaryMethod_PauseWorkflowAlpha1<WithStreamedUnaryMethod_ResumeWorkflowAlpha1<WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1<WithStreamedUnaryMethod_Shutdown<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_InvokeService<WithStreamedUnaryMethod_GetState<WithStreamedUnaryMethod_GetBulkState<WithStreamedUnaryMethod_SaveState<WithStreamedUnaryMethod_QueryStateAlpha1<WithStreamedUnaryMethod_DeleteState<WithStreamedUnaryMethod_DeleteBulkState<WithStreamedUnaryMethod_ExecuteStateTransaction<WithStreamedUnaryMethod_PublishEvent<WithStreamedUnaryMethod_BulkPublishEventAlpha1<WithStreamedUnaryMethod_InvokeBinding<WithStreamedUnaryMethod_GetSecret<WithStreamedUnaryMethod_GetBulkSecret<WithStreamedUnaryMethod_RegisterActorTimer<WithStreamedUnaryMethod_UnregisterActorTimer<WithStreamedUnaryMethod_RegisterActorReminder<WithStreamedUnaryMethod_UnregisterActorReminder<WithStreamedUnaryMethod_GetActorState<WithStreamedUnaryMethod_ExecuteActorStateTransaction<WithStreamedUnaryMethod_InvokeActor<WithStreamedUnaryMethod_GetConfigurationAlpha1<WithStreamedUnaryMethod_GetConfiguration<WithSplitStreamingMethod_SubscribeConfigurationAlpha1<WithSplitStreamingMethod_SubscribeConfiguration<WithStreamedUnaryMethod_UnsubscribeConfigurationAlpha1<WithStreamedUnaryMethod_UnsubscribeConfiguration<WithStreamedUnaryMethod_TryLockAlpha1<WithStreamedUnaryMethod_UnlockAlpha1<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_SubtleGetKeyAlpha1<WithStreamedUnaryMethod_SubtleEncryptAlpha1<WithStreamedUnaryMethod_SubtleDecryptAlpha1<WithStreamedUnaryMethod_SubtleWrapKeyAlpha1<WithStreamedUnaryMethod_SubtleUnwrapKeyAlpha1<WithStreamedUnaryMethod_SubtleSignAlpha1<WithStreamedUnaryMethod_SubtleVerifyAlpha1<WithStreamedUnaryMethod_StartWorkflowAlpha1<WithStreamedUnaryMethod_GetWorkflowAlpha1<WithStreamedUnaryMethod_PurgeWorkflowAlpha1<WithStreamedUnaryMethod_TerminateWorkflowAlpha1<WithStreamedUnaryMethod_PauseWorkflowAlpha1<WithStreamedUnaryMethod_ResumeWorkflowAlpha1<WithStreamedUnaryMethod_RaiseEventWorkflowAlpha1<WithStreamedUnaryMethod_StartWorkflowBeta1<WithStreamedUnaryMethod_GetWorkflowBeta1<WithStreamedUnaryMethod_PurgeWorkflowBeta1<WithStreamedUnaryMethod_TerminateWorkflowBeta1<WithStreamedUnaryMethod_PauseWorkflowBeta1<WithStreamedUnaryMethod_ResumeWorkflowBeta1<WithStreamedUnaryMethod_RaiseEventWorkflowBeta1<WithStreamedUnaryMethod_Shutdown<WithStreamedUnaryMethod_ScheduleJobAlpha1<WithStreamedUnaryMethod_GetJobAlpha1<WithStreamedUnaryMethod_DeleteJobAlpha1<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1
